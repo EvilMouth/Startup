@@ -1,6 +1,5 @@
 package com.zyhang.startup.dispatcher
 
-import com.zyhang.startup.config.StartupConfig
 import com.zyhang.startup.executor.ExecutorFactory
 import com.zyhang.startup.model.STData
 import com.zyhang.startup.sort.StartupSortResult
