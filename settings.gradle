@@ -1,0 +1,12 @@
+include ':core-plugin'
+include ':f'
+include ':e'
+include ':d'
+include ':c'
+include ':b'
+include ':a'
+include ':core-android'
+include ':core-compiler'
+include ':core'
+include ':app'
+rootProject.name = "Startup"

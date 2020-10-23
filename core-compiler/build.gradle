@@ -1,0 +1,19 @@
+import org.gradle.internal.jvm.Jvm
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    implementation 'com.squareup:javapoet:1.13.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    compileOnly files(Jvm.current().getToolsJar())
+
+    implementation project(':core')
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
