@@ -19,6 +19,14 @@ buildscript {
 apply plugin: 'com.zyhang.startup'
 
 android {
+    signingConfigs {
+        key123 {
+            storeFile file('./key.jks')
+            storePassword 'key123'
+            keyAlias 'key123'
+            keyPassword 'key123'
+        }
+    }
     compileSdkVersion 30
 
     defaultConfig {
@@ -29,12 +37,14 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.key123
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable true
         }
     }
     compileOptions {
