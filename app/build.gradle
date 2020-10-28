@@ -4,6 +4,19 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 apply plugin: 'bytex'
+buildscript {
+    dependencies {
+        classpath 'com.zyhang.startup:core-plugin:1.0.0'
+    }
+    repositories {
+        maven {
+            url uri('../gradle_plugins')
+        }
+        google()
+        jcenter()
+    }
+}
+apply plugin: 'com.zyhang.startup'
 
 android {
     compileSdkVersion 30

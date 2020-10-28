@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core-base" />
             <option value="$PROJECT_DIR$/core-compiler" />
+            <option value="$PROJECT_DIR$/core-plugin" />
             <option value="$PROJECT_DIR$/d" />
             <option value="$PROJECT_DIR$/e" />
             <option value="$PROJECT_DIR$/f" />

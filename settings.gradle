@@ -1,3 +1,4 @@
+include ':core-plugin'
 include ':f'
 include ':e'
 include ':d'

@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'kotlin'
+    id 'maven'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    compileOnly gradleApi()
+    compileOnly "com.android.tools.build:gradle:$gradle_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "com.bytedance.android.byteX:common:${bytex_version}"
+}
+
+group 'com.zyhang.startup'
+version '1.0.0'
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: uri('../gradle_plugins'))
+            }
+        }
+    }
+}
