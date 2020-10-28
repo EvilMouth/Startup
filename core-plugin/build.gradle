@@ -23,8 +23,10 @@ afterEvaluate { project ->
     uploadArchives {
         repositories {
             mavenDeployer {
-                repository(url: uri('../gradle_plugins'))
+                repository(url: uri("$rootDir/gradle_plugins"))
             }
         }
     }
 }
+
+apply from: "$rootDir/gradle/publish.gradle"

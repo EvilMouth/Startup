@@ -3,20 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
-apply plugin: 'bytex'
-buildscript {
-    dependencies {
-        classpath 'com.zyhang.startup:core-plugin:1.0.0'
-    }
-    repositories {
-        maven {
-            url uri('../gradle_plugins')
-        }
-        google()
-        jcenter()
-    }
-}
-apply plugin: 'com.zyhang.startup'
+apply from: "$rootDir/gradle/implementation.gradle"
 
 android {
     signingConfigs {
@@ -64,8 +51,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation project(':core')
-    kapt project(':core-compiler')
+    implementationCore()
+    kaptCompiler()
 
     implementation project(':a')
     implementation project(':b')
@@ -74,3 +61,22 @@ dependencies {
     implementation project(':e')
     implementation project(':f')
 }
+
+apply plugin: 'bytex'
+buildscript {
+    apply from: "$rootDir/gradle/implementation.gradle"
+    dependencies {
+        classpath classpathPlugin()
+    }
+    repositories {
+        maven {
+            url uri("$rootDir/gradle_plugins")
+        }
+        maven {
+            url  "https://dl.bintray.com/zyhang/maven"
+        }
+        google()
+        jcenter()
+    }
+}
+apply plugin: 'com.zyhang.startup'

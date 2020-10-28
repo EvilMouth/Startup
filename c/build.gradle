@@ -3,6 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+apply from: "$rootDir/gradle/implementation.gradle"
+
 android {
     compileSdkVersion 30
 
@@ -38,8 +40,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation project(':core')
-    kapt project(':core-compiler')
+    implementationCore()
+    kaptCompiler()
 
     implementation project(':a')
     implementation project(':b')

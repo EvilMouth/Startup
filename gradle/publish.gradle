@@ -1,0 +1,69 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+def isAndroid = project.getPlugins().hasPlugin('com.android.application') || project.getPlugins().hasPlugin('com.android.library')
+if (isAndroid) {
+    task generateAndroidSourcesJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier 'sources'
+    }
+} else {
+    task generateSourcesJar(type: Jar) {
+        from sourceSets.main.allSource
+        classifier 'sources'
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            if (isAndroid) {
+                releaseAndroid(MavenPublication) {
+                    from components.release
+
+                    groupId = POM_GROUP_ID
+                    artifactId = POM_ARTIFACT_ID
+                    version = POM_PUBLISH_VERSION
+
+                    artifact generateAndroidSourcesJar
+                }
+            } else {
+                releaseJava(MavenPublication) {
+                    from components.java
+
+                    groupId = POM_GROUP_ID
+                    artifactId = POM_ARTIFACT_ID
+                    version = POM_PUBLISH_VERSION
+
+                    artifact generateSourcesJar
+                }
+            }
+        }
+    }
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def bintray_user = properties.getProperty("bintray.user")
+def bintray_key = properties.getProperty("bintray.apikey")
+bintray {
+    user = bintray_user
+    key = bintray_key
+    publications = isAndroid ? ['releaseAndroid'] : ['releaseJava']
+    publish = true
+    override = true
+    pkg {
+        repo = POM_REPO_NAME
+        name = POM_UPLOAD_NAME
+        desc = POM_DESC
+        licenses = [POM_LICENCES]
+        websiteUrl = POM_WEBSITE
+        vcsUrl = POM_REPOSITORY
+        publicDownloadNumbers = true
+        version {
+            name = POM_PUBLISH_VERSION
+            released = new Date()
+            vcsTag = POM_PUBLISH_VERSION
+        }
+    }
+}

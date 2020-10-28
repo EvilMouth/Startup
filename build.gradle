@@ -4,6 +4,7 @@ buildscript {
         gradle_version = '4.1.0'
         kotlin_version = "1.4.10"
         bytex_version = "0.2.3"
+        jfrog_version = '1.8.4'
     }
     repositories {
         google()
@@ -18,6 +19,8 @@ buildscript {
 
         classpath "com.bytedance.android.byteX:base-plugin:$bytex_version"
         classpath "com.bytedance.android.byteX:access-inline-plugin:${bytex_version}"
+
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$jfrog_version"
     }
 }
 
@@ -25,6 +28,9 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url  "https://dl.bintray.com/zyhang/maven"
+        }
     }
 }
 

@@ -1,0 +1,47 @@
+ext {
+    startup_version = '1.0.0-alpha01'
+    useMaven = true
+
+    implementationCoreBase = this.&implementationCoreBase
+    implementationCore = this.&implementationCore
+    kaptCompiler = this.&kaptCompiler
+    classpathPlugin = this.&classpathPlugin
+}
+
+def implementationCoreBase() {
+    dependencies {
+        if (useMaven) {
+            implementation "com.zyhang:startup-core-base:$startup_version"
+        } else {
+            implementation project(':core-base')
+        }
+    }
+}
+
+def implementationCore() {
+    dependencies {
+        if (useMaven) {
+            implementation "com.zyhang:startup-core:$startup_version"
+        } else {
+            implementation project(':core')
+        }
+    }
+}
+
+def kaptCompiler() {
+    dependencies {
+        if (useMaven) {
+            kapt "com.zyhang:startup-core-compiler:$startup_version"
+        } else {
+            kapt project(':core-compiler')
+        }
+    }
+}
+
+String classpathPlugin() {
+    if (useMaven) {
+        return 'com.zyhang:startup-core-plugin:1.0.0-alpha01'
+    } else {
+        return 'com.zyhang.startup:core-plugin:1.0.0'
+    }
+}
