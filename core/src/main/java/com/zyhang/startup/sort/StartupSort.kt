@@ -3,11 +3,13 @@ package com.zyhang.startup.sort
 import com.zyhang.startup.model.STData
 import com.zyhang.startup.utils.log
 
-interface StartupSort {
+internal interface StartupSort {
     companion object {
         private const val TAG = "StartupSort"
 
         fun sort(list: List<STData>): StartupSortResult {
+            val start = System.currentTimeMillis()
+
             val iStartupMap = hashMapOf<String, STData>() // 任务key: 任务
             val inDegreeMap = hashMapOf<String, Int>() // 任务key: 任务入度
             val zeroDeque = ArrayDeque<String>() // 零级任务队列
@@ -66,7 +68,10 @@ interface StartupSort {
             // 执行顺序
             val result = prefixResult + mainResult
             printResult("order", orderResult)
-            printResult("executeOrder", result)
+            printResult("dispatchOrder", result)
+
+            val cost = System.currentTimeMillis() - start
+            log { "$TAG sort cost $cost ms" }
 
             return StartupSortResult(result, iStartupMap, iStartupChildrenMap)
         }

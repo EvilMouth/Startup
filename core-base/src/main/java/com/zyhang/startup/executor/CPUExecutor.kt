@@ -1,5 +1,6 @@
 package com.zyhang.startup.executor
 
+import com.zyhang.startup.thread.StartupThreadFactory
 import java.util.concurrent.*
 import kotlin.math.max
 import kotlin.math.min
@@ -16,7 +17,7 @@ class CPUExecutor {
                 5,
                 TimeUnit.SECONDS,
                 LinkedBlockingDeque(),
-                Executors.defaultThreadFactory(),
+                StartupThreadFactory("cpu"),
                 { _, _ -> Unit }//fixme how to handle
             ).also {
                 it.allowCoreThreadTimeOut(true)

@@ -4,11 +4,12 @@ import com.zyhang.startup.executor.ExecutorFactory
 import com.zyhang.startup.model.STData
 import com.zyhang.startup.sort.StartupSortResult
 import com.zyhang.startup.utils.log
+import com.zyhang.startup.utils.androidTrace
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
-class StartupDispatcher(sortResult: StartupSortResult) {
+internal class StartupDispatcher(sortResult: StartupSortResult) {
 
     companion object {
         private const val TAG = "StartupDispatcher"
@@ -62,11 +63,13 @@ class StartupDispatcher(sortResult: StartupSortResult) {
             startup.myCountDownLatch().await()
             startup.awaitTime = System.currentTimeMillis() - start
 
-            log { "$TAG ${startup.id} creating" }
-            start = System.currentTimeMillis()
-            startup.startup()
-            startup.startupTime = System.currentTimeMillis() - start
-            log { "$TAG ${startup.id} created" }
+            androidTrace(startup.id) {
+                log { "$TAG ${startup.id} creating" }
+                start = System.currentTimeMillis()
+                startup.startup()
+                startup.startupTime = System.currentTimeMillis() - start
+                log { "$TAG ${startup.id} created" }
+            }
 
             onStartupCompleted(startup)
         }

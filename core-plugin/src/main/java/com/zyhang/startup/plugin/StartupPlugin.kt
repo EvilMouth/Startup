@@ -39,6 +39,20 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
         private const val METHOD_INIT = "init"
         private const val METHOD_REGISTER = "register"
         private const val CLASS_ST_DATA = "$PKG/model/STData"
+
+        private fun File.touch(): File {
+            if (!this.exists()) {
+                this.parentFile?.mkdirs()
+                this.createNewFile()
+            }
+            return this
+        }
+
+        private fun InputStream.redirect(file: File): Long =
+            file.touch().outputStream().use { this.copyTo(it) }
+
+        private fun ByteArray.redirect(file: File): Long =
+            this.inputStream().use { it.redirect(file) }
     }
 
     private val targetClasses: MutableSet<String> = Collections.newSetFromMap(ConcurrentHashMap())
@@ -176,17 +190,4 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
             override fun consumesFeatureJars(): Boolean = extension.isConsumesFeatureJars()
         }
     }
-
-    private fun File.touch(): File {
-        if (!this.exists()) {
-            this.parentFile?.mkdirs()
-            this.createNewFile()
-        }
-        return this
-    }
-
-    private fun InputStream.redirect(file: File): Long =
-        file.touch().outputStream().use { this.copyTo(it) }
-
-    private fun ByteArray.redirect(file: File): Long = this.inputStream().use { it.redirect(file) }
 }

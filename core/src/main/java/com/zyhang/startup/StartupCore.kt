@@ -4,8 +4,8 @@ import com.zyhang.startup.config.StartupConfig
 import com.zyhang.startup.dispatcher.StartupDispatcher
 import com.zyhang.startup.sort.StartupSort
 import com.zyhang.startup.model.STData
-import com.zyhang.startup.utils.StartupConst
-import com.zyhang.startup.utils.logEnabled
+import com.zyhang.startup.utils.*
+import com.zyhang.startup.utils.StartupRuntime
 import java.lang.reflect.InvocationTargetException
 
 
@@ -16,7 +16,6 @@ import java.lang.reflect.InvocationTargetException
  */
 open class StartupCore {
 
-    private var config = StartupConfig()
     private val allStartup = mutableListOf<STData>()
 
     /**
@@ -48,16 +47,22 @@ open class StartupCore {
     }
 
     fun config(config: StartupConfig): StartupCore {
-        this.config = config
+        StartupRuntime.config = config
         return this
     }
 
     fun startup() {
-        logEnabled = config.logEnabled
-
-        loadRegister()
-
-        StartupDispatcher(StartupSort.sort(allStartup.toList()))
-            .dispatch(config.awaitTimeout)
+        androidTrace("startup") {
+            androidTrace("loadRegister") {
+                loadRegister()
+            }
+            val sortResult = androidTrace("sort") {
+                StartupSort.sort(allStartup.toList())
+            }
+            androidTrace("dispatch") {
+                StartupDispatcher(sortResult)
+                    .dispatch(StartupRuntime.config.awaitTimeout)
+            }
+        }
     }
 }
