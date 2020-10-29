@@ -16,8 +16,8 @@ dependencies {
     implementation "com.bytedance.android.byteX:common:${bytex_version}"
 }
 
-group 'com.zyhang.startup'
-version '1.0.0'
+group 'local.maven.evilmouth'
+version '1.0.0-local'
 
 afterEvaluate { project ->
     uploadArchives {
