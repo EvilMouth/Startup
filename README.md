@@ -138,3 +138,8 @@ f.F->g.G->b.B->d.D->c.C->a.A->e.E
 ```
 
 <img src="./img/1603941343055.jpg"></img>
+
+## Thanks
+
+[Bytex](https://github.com/bytedance/ByteX)
+[android-startup](https://github.com/idisfkj/android-startup)
