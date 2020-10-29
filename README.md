@@ -37,7 +37,7 @@ allprojects {
     }
 }
 
-// in app/build.gradle
+// in each module/build.gradle
 apply plugin: 'kotlin-kapt'
 dependencies {
     implementation "maven.evilmouth:startup-core:$startup_version"
