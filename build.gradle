@@ -1,5 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
+    apply from: "$rootDir/gradle/implementation.gradle"
     ext {
         gradle_version = '4.1.0'
         kotlin_version = "1.4.10"
@@ -9,6 +10,9 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven {
+            url uriPlugin()
+        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${gradle_version}"
@@ -21,6 +25,8 @@ buildscript {
         classpath "com.bytedance.android.byteX:access-inline-plugin:${bytex_version}"
 
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$jfrog_version"
+
+        classpath classpathPlugin()
     }
 }
 

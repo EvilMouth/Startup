@@ -63,20 +63,4 @@ dependencies {
 }
 
 apply plugin: 'bytex'
-buildscript {
-    apply from: "$rootDir/gradle/implementation.gradle"
-    dependencies {
-        classpath classpathPlugin()
-    }
-    repositories {
-        maven {
-            url uri("$rootDir/gradle_plugins")
-        }
-        maven {
-            url  "https://dl.bintray.com/zyhang/maven"
-        }
-        google()
-        jcenter()
-    }
-}
 apply plugin: 'com.zyhang.startup'

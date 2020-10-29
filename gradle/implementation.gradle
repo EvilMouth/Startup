@@ -7,6 +7,7 @@ ext {
     implementationCore = this.&implementationCore
     kaptCompiler = this.&kaptCompiler
     classpathPlugin = this.&classpathPlugin
+    uriPlugin = this.&uriPlugin
 }
 
 def implementationCoreBase() {
@@ -44,5 +45,13 @@ String classpathPlugin() {
         return "$startup_group:startup-core-plugin:$startup_version"
     } else {
         return 'local.maven.evilmouth:core-plugin:1.0.0-local'
+    }
+}
+
+Object uriPlugin() {
+    if (useMaven) {
+        return "https://dl.bintray.com/zyhang/maven"
+    } else {
+        return uri("$rootDir/gradle_plugins")
     }
 }
