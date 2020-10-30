@@ -59,7 +59,9 @@ bintray {
         licenses = [POM_LICENCES]
         websiteUrl = POM_WEBSITE
         vcsUrl = POM_REPOSITORY
+        issueTrackerUrl = POM_ISSUE_TRACKER
         publicDownloadNumbers = true
+        githubRepo = POM_GITHUB_REPO
         version {
             name = POM_PUBLISH_VERSION
             released = new Date()

@@ -1,6 +1,6 @@
 ext {
-    startup_group = 'maven.evilmouth'
-    startup_version = '1.0.0-alpha02'
+    startup_group = 'maven.evilmouth.startup'
+    startup_version = '1.0.0-beta01'
     useMaven = true
 
     implementationCoreBase = this.&implementationCoreBase
@@ -13,7 +13,7 @@ ext {
 def implementationCoreBase() {
     dependencies {
         if (useMaven) {
-            implementation "$startup_group:startup-core-base:$startup_version"
+            implementation "$startup_group:core-base:$startup_version"
         } else {
             implementation project(':core-base')
         }
@@ -23,7 +23,7 @@ def implementationCoreBase() {
 def implementationCore() {
     dependencies {
         if (useMaven) {
-            implementation "$startup_group:startup-core:$startup_version"
+            implementation "$startup_group:core:$startup_version"
         } else {
             implementation project(':core')
         }
@@ -33,7 +33,7 @@ def implementationCore() {
 def kaptCompiler() {
     dependencies {
         if (useMaven) {
-            kapt "$startup_group:startup-core-compiler:$startup_version"
+            kapt "$startup_group:core-compiler:$startup_version"
         } else {
             kapt project(':core-compiler')
         }
@@ -42,7 +42,7 @@ def kaptCompiler() {
 
 String classpathPlugin() {
     if (useMaven) {
-        return "$startup_group:startup-core-plugin:$startup_version"
+        return "$startup_group:core-plugin:$startup_version"
     } else {
         return 'local.maven.evilmouth:core-plugin:1.0.0-local'
     }

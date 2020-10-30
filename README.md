@@ -27,7 +27,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "maven.evilmouth:startup-core-plugin:$startup_version"
+        classpath "maven.evilmouth.startup:core-plugin:$startup_version"
     }
 }
 
@@ -40,8 +40,8 @@ allprojects {
 // in each module/build.gradle
 apply plugin: 'kotlin-kapt'
 dependencies {
-    implementation "maven.evilmouth:startup-core:$startup_version"
-    kapt "maven.evilmouth:startup-core-compiler:$startup_version"
+    implementation "maven.evilmouth.startup:core:$startup_version"
+    kapt "maven.evilmouth.startup:core-compiler:$startup_version"
 }
 ```
 
