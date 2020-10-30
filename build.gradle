@@ -10,8 +10,12 @@ buildscript {
     repositories {
         google()
         jcenter()
-        mavenEvilMouthLocal()
-        mavenEvilMouth()
+        maven {
+            url uri("$rootDir/gradle_plugins")
+        }
+        maven {
+            url "https://dl.bintray.com/zyhang/maven"
+        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${gradle_version}"
@@ -29,12 +33,13 @@ buildscript {
     }
 }
 
-apply from: "$rootDir/gradle/implementation.gradle"
 allprojects {
     repositories {
         google()
         jcenter()
-        mavenEvilMouth()
+        maven {
+            url "https://dl.bintray.com/zyhang/maven"
+        }
     }
 }
 

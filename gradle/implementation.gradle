@@ -49,19 +49,3 @@ String classpathPlugin() {
         return 'local.maven.evilmouth:core-plugin:1.0.0-local'
     }
 }
-
-MavenArtifactRepository mavenEvilMouth() {
-    repositories {
-        maven {
-            url "https://dl.bintray.com/zyhang/maven"
-        }
-    }
-}
-
-MavenArtifactRepository mavenEvilMouthLocal() {
-    repositories {
-        maven {
-            url uri("$rootDir/gradle_plugins")
-        }
-    }
-}
