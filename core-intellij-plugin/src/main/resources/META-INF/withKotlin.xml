@@ -1,6 +1,8 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <codeInsight.lineMarkerProvider language="kotlin"
-                                        implementationClass="com.zyhang.startup.plugin.StartupLineMarker"/>
+                                        implementationClass="com.zyhang.startup.plugin.StartupLinkDependenciesLineMarker"/>
+        <codeInsight.lineMarkerProvider language="kotlin"
+                                        implementationClass="com.zyhang.startup.plugin.StartupLinkDependentLineMarker"/>
     </extensions>
 </idea-plugin>
