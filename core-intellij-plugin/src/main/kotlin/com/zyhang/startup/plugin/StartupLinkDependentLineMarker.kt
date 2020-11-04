@@ -11,6 +11,7 @@ import com.intellij.psi.util.PsiEditorUtil
 import com.intellij.ui.awt.RelativePoint
 import com.zyhang.startup.plugin.StartupUtils.Companion.isStartupTaskRegister
 import com.zyhang.startup.plugin.StartupUtils.Companion.parseId
+import com.zyhang.startup.plugin.StartupUtils.Companion.resolveAnnotationType
 import com.zyhang.startup.plugin.StartupUtils.Companion.toStartupTaskRegister
 import java.awt.event.MouseEvent
 

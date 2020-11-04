@@ -69,27 +69,19 @@ class ShowUsagesTableCellRenderer implements TableCellRenderer {
       textChunks.append(ObjectUtils.notNull(value, "").toString(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
       return textComponentSpanningWholeRow(textChunks, rowBackground, rowForeground, column, list);
     }
-    if (usage == ((ShowUsagesTable)list).MORE_USAGES_SEPARATOR) {
+    if (usage == ShowUsagesTable.MORE_USAGES_SEPARATOR) {
       SimpleColoredComponent textChunks = new SimpleColoredComponent();
       textChunks.append("...<");
       textChunks.append("more usages", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
       textChunks.append(">...");
       return textComponentSpanningWholeRow(textChunks, rowBackground, rowForeground, column, list);
     }
-    if (usage == ((ShowUsagesTable)list).USAGES_OUTSIDE_SCOPE_SEPARATOR) {
+    if (usage == ShowUsagesTable.USAGES_OUTSIDE_SCOPE_SEPARATOR) {
       SimpleColoredComponent textChunks = new SimpleColoredComponent();
       textChunks.append("...<");
       textChunks.append(UsageViewManagerImpl.outOfScopeMessage(myOutOfScopeUsages.get(), mySearchScope), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
       textChunks.append(">...");
       return textComponentSpanningWholeRow(textChunks, rowBackground, rowForeground, column, list);
-    }
-    if (usage == ((ShowUsagesTable)list).USAGES_FILTERED_OUT_SEPARATOR) {
-      ShowUsagesAction.FilteredOutUsagesNode filtered = (ShowUsagesAction.FilteredOutUsagesNode)usageNode;
-      SimpleColoredComponent textChunks = new SimpleColoredComponent();
-      textChunks.append(filtered.toString(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
-      JComponent component = textComponentSpanningWholeRow(textChunks, rowBackground, rowForeground, column, list);
-      component.setToolTipText(filtered.getTooltip());
-      return component;
     }
 
     // want to be able to right-align the "current" word
@@ -192,7 +184,7 @@ class ShowUsagesTableCellRenderer implements TableCellRenderer {
   }
 
   @NotNull
-  private static JComponent textComponentSpanningWholeRow(@NotNull SimpleColoredComponent chunks,
+  private static Component textComponentSpanningWholeRow(@NotNull SimpleColoredComponent chunks,
                                                          Color rowBackground,
                                                          Color rowForeground,
                                                          final int column,

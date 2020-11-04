@@ -45,5 +45,14 @@ internal class StartupUtils {
                 else -> null
             }
         }
+
+        fun PsiAnnotation.resolveAnnotationType(): PsiClass? {
+            val element = nameReferenceElement
+            val declaration = element?.resolve()
+            if (declaration is PsiClass && declaration.isAnnotationType) {
+                return declaration
+            }
+            return null
+        }
     }
 }
