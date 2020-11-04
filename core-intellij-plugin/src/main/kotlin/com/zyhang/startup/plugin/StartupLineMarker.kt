@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiEditorUtil
 import com.intellij.ui.awt.RelativePoint
 import com.zyhang.startup.plugin.StartupUtils.Companion.isStartupTaskRegister
+import com.zyhang.startup.plugin.StartupUtils.Companion.parseIdDependencies
 import com.zyhang.startup.plugin.StartupUtils.Companion.toStartupTaskRegister
 import java.awt.event.MouseEvent
 
@@ -36,7 +37,8 @@ class StartupLineMarker : LineMarkerProviderDescriptor(), GutterIconNavigationHa
         val startupTaskRegister = elt.toStartupTaskRegister()!!
         val psiClass = startupTaskRegister.resolveAnnotationType()!!
 
-        ShowUsagesAction.startFindUsages(
+        ShowUsagesAction().startFindUsages(
+            Decider.Companion.LinkDependenciesDecider(startupTaskRegister.parseIdDependencies()),
             psiClass,
             RelativePoint(e),
             PsiEditorUtil.findEditor(psiClass)
