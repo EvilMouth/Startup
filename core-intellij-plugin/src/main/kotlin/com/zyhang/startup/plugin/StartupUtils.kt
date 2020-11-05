@@ -2,6 +2,7 @@ package com.zyhang.startup.plugin
 
 import com.intellij.psi.*
 import org.jetbrains.kotlin.asJava.elements.KtLightPsiArrayInitializerMemberValue
+import org.jetbrains.kotlin.asJava.elements.KtLightPsiLiteral
 import org.jetbrains.kotlin.asJava.toLightAnnotation
 import org.jetbrains.kotlin.descriptors.VariableDescriptor
 import org.jetbrains.kotlin.idea.caches.resolve.resolveToCall
@@ -55,6 +56,7 @@ internal class StartupUtils {
         // support kotlin
         private fun PsiElement.value(): String {
             return when (this) {
+                is KtLightPsiLiteral -> this.kotlinOrigin.value() // -> other kt expression
                 is PsiLiteralExpression -> this.text
                 is PsiReferenceExpression -> this.resolve()!!.value() // -> PsiField
                 is PsiField -> this.initializer!!.value() // -> PsiLiteralExpression
