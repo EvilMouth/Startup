@@ -36,7 +36,7 @@ class StartupLinkDependentLineMarker : LineMarkerProviderDescriptor(), GutterIco
 
     override fun navigate(e: MouseEvent, elt: PsiElement) {
         val startupTaskRegister = elt.toStartupTaskRegister()!!
-        val psiClass = startupTaskRegister.resolveAnnotationType()!!
+        val psiClass = startupTaskRegister.resolveAnnotationType()
 
         ShowUsagesAction().startFindUsages(
             Decider.Companion.LinkDependentDecider(startupTaskRegister.parseId()),

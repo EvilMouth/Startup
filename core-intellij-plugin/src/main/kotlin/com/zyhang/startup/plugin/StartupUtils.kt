@@ -32,7 +32,7 @@ internal class StartupUtils {
 
         // must be StartupTaskRegister
         fun PsiAnnotation.parseIdDependencies(): List<String> {
-            val collection = when (val idDependencies = this.findAttributeValue("idDependencies")) {
+            val collection = when (val idDependencies = this.findAttributeValue("idDependencies")!!) {
                 is KtLightPsiArrayInitializerMemberValue -> {
                     idDependencies.kotlinOrigin.children
                         .toList()
@@ -76,13 +76,18 @@ internal class StartupUtils {
         }
 
         // copy from intellij 2020.2.3
-        fun PsiAnnotation.resolveAnnotationType(): PsiClass? {
+        fun PsiAnnotation.resolveAnnotationType(): PsiElement {
             val element = nameReferenceElement
             val declaration = element?.resolve()
             if (declaration is PsiClass && declaration.isAnnotationType) {
                 return declaration
+            } else if (declaration is KtPrimaryConstructor) {
+                val parent = declaration.parent
+                if (parent is KtClass && parent.isAnnotation()) {
+                    return parent
+                }
             }
-            return null
+            throw StartupCompatIssue()
         }
     }
 }
