@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.konan.properties.Properties
 plugins {
     id("org.jetbrains.intellij") version "0.6.2"
     java
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm")
 }
 
 val pom = loadPom()
