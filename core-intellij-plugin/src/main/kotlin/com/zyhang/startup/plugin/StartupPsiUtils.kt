@@ -31,7 +31,7 @@ fun PsiAnnotation.parseId(): String {
 
 // must be StartupTaskRegister
 fun PsiAnnotation.parseIdDependencies(): List<String> {
-    val collection = when (val idDependencies = this.findAttributeValue("idDependencies")!!) {
+    val collection = when (val idDependencies = this.findAttributeValue("idDependencies")) {
         is KtLightPsiArrayInitializerMemberValue -> {
             idDependencies.kotlinOrigin.children
                 .toList()
@@ -55,7 +55,7 @@ fun PsiAnnotation.parseIdDependencies(): List<String> {
 }
 
 // [] or {}
-private fun PsiAnnotationMemberValue.isEmptyDependencies(): PsiAnnotationMemberValue? {
+private fun PsiAnnotationMemberValue?.isEmptyDependencies(): PsiAnnotationMemberValue? {
     return this.takeIf { psiElement ->
         psiElement is PsiLiteralExpression &&
                 psiElement.text.run {
