@@ -78,6 +78,8 @@ class B : StartupTask {
 
 从 [Release](https://github.com/EvilMouth/Startup/releases) 下载 Navigator.zip，导入到 Android Studio
 
+<img src="./img/WX20201106-124004@2x.png"></img>
+
 > 导航插件需要 Android Studio 版本在 201.6668.121 以上
 
 ### StartupTaskRegister 属性
