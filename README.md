@@ -14,6 +14,7 @@ Android多模块任务启动方案
 - 支持多进程（启动链区分进程）
 - 编译期校验任务依赖合法性（即时纠错）
 - 编译期生成启动任务执行顺序以及依赖关系
+- 导航插件快速在StartupTask之间跳转
 
 ## 使用
 
@@ -72,6 +73,12 @@ class B : StartupTask {
 更多使用详情见 module app
 
 ## 说明
+
+### Startup Navigator 导航
+
+从 [Release](https://github.com/EvilMouth/Startup/releases) 下载 Navigator.zip，导入到 Android Studio
+
+> 导航插件需要 Android Studio 版本在 201.6668.121 以上
 
 ### StartupTaskRegister 属性
 
