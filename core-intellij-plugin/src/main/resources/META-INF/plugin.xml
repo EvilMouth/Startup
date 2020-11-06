@@ -1,10 +1,10 @@
 <idea-plugin>
     <id>com.zyhang.startup.core-intellij-plugin</id>
-    <name>Startup Navigator</name>
+    <name>Startup-Navigator</name>
     <vendor email="startup@evilmouth.net" url="https://evilmouth.net">Evil Mouth</vendor>
 
     <description><![CDATA[
-    Help Navigate Startup Task Linking!!!!!!!!
+    Help navigate one StartupTask to another StartupTask by their id and idDependencies
     ]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
