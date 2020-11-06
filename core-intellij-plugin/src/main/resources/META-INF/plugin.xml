@@ -1,4 +1,5 @@
 <idea-plugin>
+    <idea-version since-build="201.6668.121"/>
     <id>com.zyhang.startup.core-intellij-plugin</id>
     <name>Startup-Navigator</name>
     <vendor email="startup@evilmouth.net" url="https://evilmouth.net">Evil Mouth</vendor>

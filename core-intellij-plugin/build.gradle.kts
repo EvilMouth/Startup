@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.konan.properties.Properties
 
 plugins {
-    id("org.jetbrains.intellij") version "0.6.1"
+    id("org.jetbrains.intellij") version "0.6.2"
     java
     kotlin("jvm") version "1.4.10"
 }
@@ -27,7 +27,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    testCompile("junit", "junit", "4.12")
+    testImplementation("junit", "junit", "4.12")
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
@@ -60,4 +60,13 @@ fun loadPom(): Pair<String, String> {
     println("pom group -> $group")
     println("pom version -> $version")
     return group to version
+}
+
+tasks.publishPlugin {
+    val localProperties = Properties()
+    runCatching {
+        localProperties.load(file("./local.properties").inputStream())
+    }
+    val token = localProperties.getProperty("intellij-hub-perm-token", "perm:xxx")
+    setToken(token)
 }
