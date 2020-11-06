@@ -1,6 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.konan.properties.Properties
 
+val customPluginName = "Startup-Navigator"
+
 plugins {
     id("org.jetbrains.intellij") version "0.6.2"
     java
@@ -37,7 +39,7 @@ intellij {
         "java",
         "org.jetbrains.kotlin"
     )
-    pluginName = "Startup-Navigator"
+    pluginName = customPluginName
     updateSinceUntilBuild = false
 }
 tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
@@ -69,4 +71,16 @@ tasks.publishPlugin {
     }
     val token = localProperties.getProperty("intellij-hub-perm-token", "perm:xxx")
     setToken(token)
+}
+
+tasks.create("backupPlugin") {
+    val fileName = "${customPluginName}-${version}.zip"
+    copy {
+        from("./build/distributions/${fileName}")
+        into("./lib/")
+    }.also {
+        println("backupIntellijPlugin isSuccess -> ${it.didWork}")
+    }
+}.also {
+    it.group = "intellij"
 }
