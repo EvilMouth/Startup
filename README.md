@@ -78,6 +78,8 @@ class B : StartupTask {
 
 从 [Release](https://github.com/EvilMouth/Startup/releases) 下载 Navigator.zip，导入到 Android Studio
 
+或直接在 [Marketplace](https://plugins.jetbrains.com/plugin/15338-startup-navigator) 搜索下载
+
 <img src="./img/WX20201106-124004@2x.png"></img>
 
 > 导航插件需要 Android Studio 版本在 201.6668.121 以上
