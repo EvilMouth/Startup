@@ -16,9 +16,9 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <codeInsight.lineMarkerProvider language="JAVA"
-                                        implementationClass="com.zyhang.startup.plugin.StartupLinkDependenciesLineMarker"/>
+                                        implementationClass="com.zyhang.startup.plugin.StartupLinkUpLineMarker"/>
         <codeInsight.lineMarkerProvider language="JAVA"
-                                        implementationClass="com.zyhang.startup.plugin.StartupLinkDependentLineMarker"/>
+                                        implementationClass="com.zyhang.startup.plugin.StartupLinkDownLineMarker"/>
     </extensions>
 
     <actions>

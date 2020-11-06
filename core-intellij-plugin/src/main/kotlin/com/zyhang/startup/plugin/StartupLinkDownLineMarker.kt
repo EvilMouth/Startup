@@ -9,13 +9,9 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiEditorUtil
 import com.intellij.ui.awt.RelativePoint
-import com.zyhang.startup.plugin.StartupUtils.Companion.isStartupTaskRegister
-import com.zyhang.startup.plugin.StartupUtils.Companion.parseIdDependencies
-import com.zyhang.startup.plugin.StartupUtils.Companion.resolveAnnotationType
-import com.zyhang.startup.plugin.StartupUtils.Companion.toStartupTaskRegister
 import java.awt.event.MouseEvent
 
-class StartupLinkDependenciesLineMarker : LineMarkerProviderDescriptor(), GutterIconNavigationHandler<PsiElement> {
+class StartupLinkDownLineMarker : LineMarkerProviderDescriptor(), GutterIconNavigationHandler<PsiElement> {
     override fun getName(): String? = "StartupLineMarker"
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
@@ -39,7 +35,7 @@ class StartupLinkDependenciesLineMarker : LineMarkerProviderDescriptor(), Gutter
         val psiClass = startupTaskRegister.resolveAnnotationType()
 
         ShowUsagesAction().startFindUsages(
-            Decider.Companion.LinkDependenciesDecider(startupTaskRegister.parseIdDependencies()),
+            Decider.Companion.LinkDownDecider(startupTaskRegister.parseId()),
             psiClass,
             RelativePoint(e),
             PsiEditorUtil.findEditor(psiClass)
@@ -47,6 +43,6 @@ class StartupLinkDependenciesLineMarker : LineMarkerProviderDescriptor(), Gutter
     }
 
     companion object {
-        private val navigationOnIcon = IconLoader.getIcon("/icons/up_arrow.svg")
+        private val navigationOnIcon = IconLoader.getIcon("/icons/down_arrow.svg")
     }
 }
