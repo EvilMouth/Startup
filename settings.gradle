@@ -1,3 +1,4 @@
+include ':core-intellij-plugin'
 include ':core-plugin'
 include ':core-compiler'
 include ':core'
