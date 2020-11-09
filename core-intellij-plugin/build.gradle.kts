@@ -55,14 +55,17 @@ tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml
 fun loadPom(): Pair<String, String> {
     var group = "com.zyhang.startup"
     var version = "1.0-SNAPSHOT"
+
     if (
-        project.hasProperty("BUILD_WITH_INTELLIJ_PLUGIN") &&
-        (project.property("BUILD_WITH_INTELLIJ_PLUGIN") as String).toBoolean()
+        project.hasProperty("POM_GROUP_ID") &&
+        project.hasProperty("POM_PUBLISH_VERSION")
     ) {
-        println("BUILD_WITH_INTELLIJ_PLUGIN -> true")
         group = project.property("POM_GROUP_ID") as String
         version = project.property("POM_PUBLISH_VERSION") as String
-    } else if (file("../gradle.properties").exists()) {
+    } else if (
+        file("../gradle.properties").exists()
+    ) {
+        println("fetching parent properties")
         val properties = Properties()
         properties.load(file("../gradle.properties").inputStream())
         group = properties.getProperty("POM_GROUP_ID", group)
@@ -70,6 +73,7 @@ fun loadPom(): Pair<String, String> {
     } else {
         throw IllegalStateException("please config plugin group and version in gradle.properties")
     }
+
     println("pom group -> $group")
     println("pom version -> $version")
     return group to version
