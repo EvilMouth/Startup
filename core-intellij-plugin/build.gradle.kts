@@ -74,13 +74,14 @@ tasks.publishPlugin {
 }
 
 tasks.create("backupPlugin") {
-    val fileName = "${customPluginName}-${version}.zip"
-    copy {
-        from("./build/distributions/${fileName}")
-        into("./lib/")
-    }.also {
-        println("backupIntellijPlugin isSuccess -> ${it.didWork}")
+    group = "intellij"
+    doFirst {
+        val fileName = "${customPluginName}-${version}.zip"
+        copy {
+            from("./build/distributions/${fileName}")
+            into("./lib/")
+        }.also {
+            println("backupIntellijPlugin isSuccess -> ${it.didWork}")
+        }
     }
-}.also {
-    it.group = "intellij"
 }
