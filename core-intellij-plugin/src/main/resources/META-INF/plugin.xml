@@ -5,7 +5,12 @@
     <vendor email="startup@evilmouth.net" url="https://evilmouth.net">Evil Mouth</vendor>
 
     <description><![CDATA[
-    Help navigate one StartupTask to another StartupTask by their id and idDependencies
+    Plugin for navigate one <a href="https://github.com/EvilMouth/Startup">StartupTask</a>
+    to another StartupTask, which is a framework to help android app launch faster.
+    <p>Features:</p>
+    <ul>
+        <li>Provide two navigateIcon for each StartupTask, link to their reference and dependencies</li>
+    </ul>
     ]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
