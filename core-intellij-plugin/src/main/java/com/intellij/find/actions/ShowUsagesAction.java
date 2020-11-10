@@ -319,7 +319,8 @@ public class ShowUsagesAction extends AnAction implements PopupAction, HintManag
         table.setTableModel(data);
 
         boolean isPreviewMode =
-                Boolean.TRUE == PreviewManager.SERVICE.preview(project, UsagesPreviewPanelProvider.ID, Pair.create(usageView, table), false);
+//                Boolean.TRUE == PreviewManager.SERVICE.preview(project, UsagesPreviewPanelProvider.ID, Pair.create(usageView, table), false);
+                false;
         Runnable itemChosenCallback = table.prepareTable(
                 isPreviewMode,
                 () -> showElementUsages(
