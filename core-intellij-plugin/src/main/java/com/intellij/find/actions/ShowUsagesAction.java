@@ -15,7 +15,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.ide.IdeBundle;
 import com.intellij.ide.util.gotoByName.ModelDiff;
-import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogger;
+//import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogger;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
@@ -220,7 +220,7 @@ public class ShowUsagesAction extends AnAction implements PopupAction, HintManag
         // show super method warning dialogs before starting finding usages
         PsiElement[] primaryElements = handler.getPrimaryElements();
         PsiElement[] secondaryElements = handler.getSecondaryElements();
-        UsageSearcher usageSearcher = FindUsagesManager.createUsageSearcher(handler, primaryElements, secondaryElements, options);
+        UsageSearcher usageSearcher = FindUsagesManager2.createUsageSearcher(handler, primaryElements, secondaryElements, options);
         showElementUsages(
                 project, editor, popupPosition, getUsagesPageSize(), minWidth,
                 findUsagesManager.createPresentation(handler, options),
@@ -499,7 +499,7 @@ public class ShowUsagesAction extends AnAction implements PopupAction, HintManag
     }
 
     private static void showDialog(@NotNull FindUsagesHandlerBase handler, @NotNull Consumer<FindUsagesOptions> optionsConsumer) {
-        FUCounterUsageLogger.getInstance().logEvent("toolbar", "ShowUsagesPopup.showSettings");
+//        FUCounterUsageLogger.getInstance().logEvent("toolbar", "ShowUsagesPopup.showSettings");
         AbstractFindUsagesDialog dialog;
         if (handler instanceof FindUsagesHandlerUi) {
             dialog = ((FindUsagesHandlerUi) handler).getFindUsagesDialog(false, false, false);
