@@ -5,7 +5,7 @@ import com.zyhang.startup.StartupTaskRegister;
 import com.zyhang.startup.executor.IOExecutor;
 
 @StartupTaskRegister(id = "g.G", executorFactory = IOExecutor.Factory.class)
-public class G implements StartupTask {
+public class G extends StartupTask {
     @Override
     public void startup() {
         try {

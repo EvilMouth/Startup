@@ -2,18 +2,30 @@ package com.zyhang.startup.sort
 
 import com.zyhang.startup.model.STData
 import com.zyhang.startup.utils.log
+import com.zyhang.startup.utils.trace
+import kotlin.system.measureTimeMillis
 
 internal interface StartupSort {
     companion object {
         private const val TAG = "StartupSort"
 
         fun sort(list: List<STData>): StartupSortResult {
-            val start = System.currentTimeMillis()
+            var sortResult: StartupSortResult? = null
+            trace("sort") {
+                val cost = measureTimeMillis {
+                    sortResult = sortInternal(list)
+                }
+                log { "$TAG sort cost $cost ms" }
+            }
+            return sortResult!!
+        }
 
+        private fun sortInternal(list: List<STData>): StartupSortResult {
             val iStartupMap = hashMapOf<String, STData>() // 任务key: 任务
             val inDegreeMap = hashMapOf<String, Int>() // 任务key: 任务入度
             val zeroDeque = ArrayDeque<String>() // 零级任务队列
-            val iStartupChildrenMap = hashMapOf<String, MutableList<String>>() // 任务key: 子任务key集合
+            val iStartupChildrenMap =
+                hashMapOf<String, MutableList<String>>() // 任务key: 子任务key集合
 
             // 初始化一些辅助信息
             list.forEach { iStartup ->
@@ -70,17 +82,13 @@ internal interface StartupSort {
             printResult("order", orderResult)
             printResult("dispatchOrder", result)
 
-            val cost = System.currentTimeMillis() - start
-            log { "$TAG sort cost $cost ms" }
-
             return StartupSortResult(result, iStartupMap, iStartupChildrenMap)
         }
 
         private fun printResult(title: CharSequence, list: List<STData>) {
             log {
                 buildString {
-                    append("$TAG ${title}:")
-                    append("\n")
+                    appendLine("$TAG ${title}:")
                     list.forEachIndexed { index, iStartup ->
                         if (index != 0) {
                             append("->")

@@ -7,7 +7,7 @@ import com.zyhang.startup.StartupTaskRegister;
         id = "i.I",
         idDependencies = {"g.G", "h.H"}
 )
-public class I implements StartupTask {
+public class I extends StartupTask {
     @Override
     public void startup() {
 

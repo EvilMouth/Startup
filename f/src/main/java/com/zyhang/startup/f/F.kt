@@ -11,7 +11,7 @@ import java.util.concurrent.Executor
     executorFactory = CPUExecutor.Factory::class,
     blockWhenAsync = true
 )
-class F : StartupTask {
+class F : StartupTask() {
 
     override fun startup() {
         Thread.sleep(2000)

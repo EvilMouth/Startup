@@ -3,12 +3,12 @@ package com.zyhang.startup.dispatcher
 import com.zyhang.startup.executor.ExecutorFactory
 import com.zyhang.startup.model.STData
 import com.zyhang.startup.sort.StartupSortResult
-import com.zyhang.startup.utils.log
-import com.zyhang.startup.utils.androidTrace
+import com.zyhang.startup.utils.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
+// dispatch startup task
 internal class StartupDispatcher(sortResult: StartupSortResult) {
 
     companion object {
@@ -33,23 +33,25 @@ internal class StartupDispatcher(sortResult: StartupSortResult) {
     // 执行器缓存
     private val executorFactoryCache = hashMapOf<Class<out ExecutorFactory>, ExecutorFactory>()
 
-    fun dispatch(awaitTimeout: Long) {
-        val cost = measureTimeMillis {
-            startupList.run {
-                // 计算异步且阻塞的任务
-                val size = filter { it.isBlock }.size
-                if (size > 0) {
-                    countDownLatch = CountDownLatch(size)
+    fun dispatch(timeout: Long) {
+        trace("dispatch") {
+            val cost = measureTimeMillis {
+                startupList.run {
+                    // 计算异步且阻塞的任务
+                    val size = filter { it.isBlock }.size
+                    if (size > 0) {
+                        countDownLatch = CountDownLatch(size)
+                    }
+                    // 已经排好序了，依次执行
+                    forEach {
+                        dispatch(it)
+                    }
+                    // 阻塞总线程（App启动线程）
+                    countDownLatch?.await(timeout, TimeUnit.MILLISECONDS)
                 }
-                // 已经排好序了，依次执行
-                forEach {
-                    dispatch(it)
-                }
-                // 阻塞总线程（App启动线程）
-                countDownLatch?.await(awaitTimeout, TimeUnit.MILLISECONDS)
             }
+            log { "$TAG total main thread time cost ${cost}ms" }
         }
-        log { "$TAG total main thread time cost ${cost}ms" }
     }
 
     private fun dispatch(startup: STData) {
@@ -63,7 +65,7 @@ internal class StartupDispatcher(sortResult: StartupSortResult) {
             startup.myCountDownLatch().await()
             startup.awaitTime = System.currentTimeMillis() - start
 
-            androidTrace(startup.id) {
+            trace(startup.id) {
                 log { "$TAG ${startup.id} creating" }
                 start = System.currentTimeMillis()
                 startup.startup()

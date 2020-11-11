@@ -11,7 +11,7 @@ import java.util.concurrent.Executor
     idDependencies = ["b.B"],
     executorFactory = CPUExecutor.Factory::class
 )
-class C : StartupTask {
+class C : StartupTask() {
 
     override fun startup() {
         Log.d("Core", "C startup")

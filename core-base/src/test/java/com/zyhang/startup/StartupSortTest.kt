@@ -1,6 +1,5 @@
 package com.zyhang.startup
 
-import com.zyhang.startup.config.StartupConfig
 import com.zyhang.startup.executor.CPUExecutor
 import com.zyhang.startup.executor.IOExecutor
 import com.zyhang.startup.model.STData
@@ -18,9 +17,7 @@ class StartupSortTest {
     @Test
     fun sort_isCorrect() {
         StartupCore().run {
-            config(StartupConfig().apply {
-                logEnabled = true
-            })
+            configDebug(true)
 
             register(Task4())
             register(Task2())

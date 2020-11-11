@@ -107,7 +107,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
             })
         }
         dotSB.append("}")
-        context.logger.i("graphviz dot code below\n$dotSB")
+        context.logger.i("graphviz dot code below\n\n\n$dotSB\n\n")
         context.logger.i("parse dot file in http://magjac.com/graphviz-visual-editor/")
 
         // generate loader class

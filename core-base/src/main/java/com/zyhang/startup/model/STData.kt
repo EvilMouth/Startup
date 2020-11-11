@@ -11,7 +11,7 @@ abstract class STData(
     val executorFactory: Class<out ExecutorFactory> = BlockExecutor.Factory::class.java,
     val blockWhenAsync: Boolean = false,
     val process: String = "",
-) : StartupTask {
+) : StartupTask() {
 
     /**
      * 是否是同步任务

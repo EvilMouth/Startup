@@ -11,7 +11,7 @@ import java.util.concurrent.Executor
     idDependencies = ["a.A"],
     executorFactory = IOExecutor.Factory::class
 )
-class B : StartupTask {
+class B : StartupTask() {
 
     override fun startup() {
         Thread.sleep(3000)
