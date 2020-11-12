@@ -13,7 +13,10 @@ import com.ss.android.ugc.bytex.transformer.TransformEngine
 import com.zyhang.startup.plugin.bytex.StartupContext
 import com.zyhang.startup.plugin.bytex.StartupExtension
 import com.zyhang.startup.plugin.model.StartupInfo
-import com.zyhang.startup.plugin.sort.StartupSimpleSort
+import com.zyhang.startup.plugin.sort.StartupSort
+import com.zyhang.startup.plugin.utils.appendLine
+import com.zyhang.startup.plugin.utils.redirect
+import com.zyhang.startup.plugin.utils.touch
 import org.gradle.api.Project
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
@@ -21,7 +24,6 @@ import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import java.io.File
-import java.io.InputStream
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -39,25 +41,10 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
         private const val METHOD_INIT = "init"
         private const val METHOD_REGISTER = "register"
         private const val CLASS_ST_DATA = "$PKG/model/STData"
-
-        private fun File.touch(): File {
-            if (!this.exists()) {
-                this.parentFile?.mkdirs()
-                this.createNewFile()
-            }
-            return this
-        }
-
-        private fun InputStream.redirect(file: File): Long =
-            file.touch().outputStream().use { this.copyTo(it) }
-
-        private fun ByteArray.redirect(file: File): Long =
-            this.inputStream().use { it.redirect(file) }
     }
 
     private val targetClasses: MutableSet<String> = Collections.newSetFromMap(ConcurrentHashMap())
-    private val targetInfoList: MutableSet<StartupInfo> =
-        Collections.newSetFromMap(ConcurrentHashMap())
+    private val targetInfoMap: MutableMap<String, StartupInfo> = ConcurrentHashMap()
 
     override fun getContext(
         project: Project?,
@@ -69,6 +56,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
         super.traverse(relativePath, node)
         if (node.name.endsWith(CLASS_TARGET_SUFFIX)) {
             targetClasses.add(node.name)
+
             node.visibleAnnotations?.find {
                 it.desc == "L${CLASS_ST_INFO};"
             }?.values?.let {
@@ -77,7 +65,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
                     map[it[i] as String] = it[i + 1]
                 }
                 val info = Gson().fromJson(map["meta"] as String, StartupInfo::class.java)
-                targetInfoList.add(info)
+                targetInfoMap[node.name] = info
             }
         }
     }
@@ -85,30 +73,26 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
     override fun afterTransform(engine: TransformEngine) {
         super.afterTransform(engine)
 
-        if (targetClasses.size != targetInfoList.size) {
+        if (targetClasses.size != targetInfoMap.size) {
             throw RuntimeException("$TAG something wrong")
         }
+        context.logger.i("found target info -> $targetInfoMap")
+        val targetInfoList = targetInfoMap.values
 
-        context.logger.i("found target classes $targetClasses")
-        context.logger.i("found info list $targetInfoList")
+        // sort and check
+        val sort = StartupSort()
 
-        val dotSB = StringBuilder().append("digraph G {").append("\n")
-        // sort check
         val allProcess = targetInfoList.map { it.process }.toSet()
         allProcess.forEach { process ->
-            val list = targetInfoList.filter { it.process == process }
             val processName = if (process.isEmpty()) "main" else process
-            StartupSimpleSort().sort(processName, list, printRelationship = {
-                context.logger.i("process->$processName $it")
-            }, printOrder = {
-                context.logger.i("process->$processName $it")
-            }, printDot = {
-                dotSB.append(it).append("\n")
-            })
+            val list = targetInfoList.filter { it.process == process }
+
+            sort.sort(processName, list)
         }
-        dotSB.append("}")
-        context.logger.i("graphviz dot code below\n\n\n$dotSB\n\n")
-        context.logger.i("parse dot file in http://magjac.com/graphviz-visual-editor/")
+
+        context.logger.i("startup dispatch order below:" + "\n\n" + sort.generateOrder())
+        context.logger.i("startup relationship below:" + "\n\n" + sort.generateRelationship())
+        context.logger.i("graphviz dot code below:" + "\n\n" + sort.generateGraphviz() + "\n" + "parse dot code in http://magjac.com/graphviz-visual-editor/")
 
         // generate loader class
         try {

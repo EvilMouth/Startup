@@ -1,21 +1,23 @@
 package com.zyhang.startup.plugin.sort
 
+import com.zyhang.startup.plugin.graphviz.GraphvizGenerator
 import com.zyhang.startup.plugin.model.StartupInfo
+import com.zyhang.startup.plugin.utils.appendDivider
+import com.zyhang.startup.plugin.utils.appendLine
+import com.zyhang.startup.plugin.utils.sortString
 import java.util.ArrayDeque
 
-class StartupSimpleSort {
+class StartupSort {
 
     companion object {
-        private const val TAG = "StartupSimpleSort"
+        private const val TAG = "StartupSort"
     }
 
-    fun sort(
-        process: String,
-        list: List<StartupInfo>,
-        printRelationship: (String) -> Unit,
-        printOrder: (String) -> Unit,
-        printDot: (String) -> Unit
-    ) {
+    private val relationshipGenerator = StringBuilder()
+    private val orderGenerator = StringBuilder()
+    private val graphvizGenerator = GraphvizGenerator()
+
+    fun sort(process: String, list: List<StartupInfo>) {
         val iStartupMap = hashMapOf<String, StartupInfo>() // 任务key: 任务
         val inDegreeMap = hashMapOf<String, Int>() // 任务key: 任务入度
         val zeroDeque = ArrayDeque<String>() // 零级任务队列
@@ -54,7 +56,7 @@ class StartupSimpleSort {
             }
 
         // 依赖报告1.0
-        val relationship = buildString {
+        relationshipGenerator.run {
             val graph = mutableListOf<Pair<String, Int>>()
             fun deep(uniqueKey: String, deep: Int) {
                 val startup = iStartupMap[uniqueKey]!!
@@ -66,8 +68,9 @@ class StartupSimpleSort {
             zeroDeque.forEach { uniqueKey ->
                 deep(uniqueKey, 0)
             }
-            appendLine("任务依赖关系:")
-            appendLine("=========================================================================")
+
+            appendLine()
+            appendLine("process->$process")
             graph.forEach {
                 var deep = it.second
                 while (deep > 0) {
@@ -76,26 +79,23 @@ class StartupSimpleSort {
                 }
                 appendLine("---- ${it.first}")
             }
-            append("=========================================================================")
+            appendLine()
         }
 
         // 依赖报告2.0 graphviz
-        val dot = buildString {
-            appendLine("subgraph \"cluster_$process\" {")
+        graphvizGenerator.subgraph(process) {
             fun deep(uniqueKey: String) {
                 val children = iStartupChildrenMap[uniqueKey]
                 if (children.isNullOrEmpty()) {
-                    appendLine("\"$uniqueKey\";")
+                    insertNode(uniqueKey)
                 } else {
                     children.forEach { childUniqueKey ->
-                        appendLine("\"$uniqueKey\"->\"$childUniqueKey\";")
+                        insertNode(uniqueKey, childUniqueKey)
                         deep(childUniqueKey)
                     }
                 }
             }
             zeroDeque.forEach { deep(it) }
-            appendLine("label = \"process -> $process\";")
-            append("}")
         }
 
         val mainResult = mutableListOf<StartupInfo>() // 主线程执行的任务
@@ -123,40 +123,43 @@ class StartupSimpleSort {
             throw RuntimeException("$TAG sort error")
         }
 
-        // 输出
-        printRelationship.invoke(relationship)
-        printDot.invoke(dot)
-
         // 顺序
-        printOrder.invoke(
-            buildString {
-                appendLine("任务链:")
-                appendLine("=========================================================================")
-                appendLine("任务排序:")
-                appendLine(orderResult.sortString())
-                appendLine("同步任务分发顺序:")
-                appendLine(mainResult.sortString())
-                appendLine("异步任务分发顺序:")
-                appendLine(prefixResult.sortString())
-                appendLine("App启动时任务分发顺序:")
-                appendLine((prefixResult + mainResult).sortString())
-                append("=========================================================================")
-            }
-        )
-    }
-
-    private fun List<StartupInfo>.sortString(): String {
-        return buildString {
-            this@sortString.forEachIndexed { index, iStartup ->
-                if (index != 0) {
-                    append("->")
-                }
-                append(iStartup.id)
-            }
+        orderGenerator.run {
+            appendLine()
+            appendLine("process->$process")
+            appendLine("任务排序:")
+            appendLine(orderResult.sortString())
+            appendLine("同步任务分发顺序:")
+            appendLine(mainResult.sortString())
+            appendLine("异步任务分发顺序:")
+            appendLine(prefixResult.sortString())
+            appendLine("App启动时任务分发顺序:")
+            appendLine((prefixResult + mainResult).sortString())
+            appendLine()
         }
     }
 
-    private fun StringBuilder.appendLine(str: String): StringBuilder {
-        return append(str).append("\n")
+    fun generateRelationship(): String {
+        return buildString {
+            appendDivider().appendLine()
+            appendLine(relationshipGenerator.toString())
+            appendDivider()
+        }
+    }
+
+    fun generateOrder(): String {
+        return buildString {
+            appendDivider().appendLine()
+            appendLine(orderGenerator.toString())
+            appendDivider()
+        }
+    }
+
+    fun generateGraphviz(): String {
+        return buildString {
+            appendDivider()
+            appendLine(graphvizGenerator.generate())
+            appendDivider()
+        }
     }
 }
