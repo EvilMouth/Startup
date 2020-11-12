@@ -51,8 +51,8 @@ dependencies {
 
 ```kotlin
 @StartupTaskRegister(id = "a.A")
-class A : StartupTask {
-    override fun startup() {
+class A : AndroidStartupTask() {
+    override fun startup(context: Context) {
         Log.i("Core", "A startup")
     }
 }
@@ -62,8 +62,8 @@ class A : StartupTask {
     idDependencies = ["a.A"],
     executorFactory = IOExecutor.Factory::class
 )
-class B : StartupTask {
-    override fun startup() {
+class B : AndroidStartupTask() {
+    override fun startup(context: Context) {
         Thread.sleep(3000)
         Log.d("Core", "B startup")
     }
@@ -78,7 +78,7 @@ class B : StartupTask {
 
 从 [Release](https://github.com/EvilMouth/Startup/releases) 下载 Navigator.zip，导入到 Android Studio
 
-或直接在 [Marketplace](https://plugins.jetbrains.com/plugin/15338-startup-navigator) 搜索下载
+或直接在 [Marketplace](https://plugins.jetbrains.com/plugin/15338-startup-navigator?preview=true) 搜索下载
 
 <img src="./img/WX20201106-124004@2x.png"></img>
 

@@ -6,7 +6,7 @@ import com.zyhang.startup.trace.AndroidSTracer
 import com.zyhang.startup.trace.STracer
 import com.zyhang.startup.utils.ProcessUtils
 
-class StartupCoreAndroid(private val context: Context) : StartupCore() {
+class StartupCoreAndroid(private val context: Context) : StartupCore(context) {
 
     override var tracer: STracer = AndroidSTracer()
 

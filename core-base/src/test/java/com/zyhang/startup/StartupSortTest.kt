@@ -16,7 +16,7 @@ class StartupSortTest {
 
     @Test
     fun sort_isCorrect() {
-        StartupCore().run {
+        StartupCore(null).run {
             configDebug(true)
 
             register(Task4())

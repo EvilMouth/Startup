@@ -5,6 +5,7 @@ import com.zyhang.startup.log.SLogger
 import com.zyhang.startup.sort.StartupSort
 import com.zyhang.startup.model.STData
 import com.zyhang.startup.runtime.StartupRuntime
+import com.zyhang.startup.ship.StartupShipUnLoader
 import com.zyhang.startup.trace.STracer
 import com.zyhang.startup.utils.*
 import java.lang.reflect.InvocationTargetException
@@ -14,10 +15,12 @@ import java.util.*
 /**
  * startup launch core
  *
+ * @param shipStuff store data to supply for startupTask
+ *
  * @see StartupTask
  * @see StartupTaskRegister
  */
-open class StartupCore {
+open class StartupCore(private val shipStuff: Any?) : StartupShipUnLoader {
 
     open var awaitTimeout: Long = 5000L
     open var debug: Boolean = false
@@ -60,6 +63,10 @@ open class StartupCore {
                 targetException.printStackTrace()
             }
         }
+    }
+
+    override fun unload(): Any? {
+        return shipStuff
     }
 
     /**
