@@ -1,6 +1,6 @@
 # Startup
 
-[ ![Download](https://api.bintray.com/packages/zyhang/maven/StartupCore/images/download.svg) ](https://bintray.com/zyhang/maven/StartupCore/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/zyhang/maven/Startup-Core/images/download.svg) ](https://bintray.com/zyhang/maven/Startup-Core/_latestVersion)
 
 Android多模块任务启动方案
 
