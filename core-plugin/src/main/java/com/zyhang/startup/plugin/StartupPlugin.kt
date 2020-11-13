@@ -3,18 +3,21 @@ package com.zyhang.startup.plugin
 import com.android.SdkConstants
 import com.android.build.api.transform.Format
 import com.android.build.api.transform.QualifiedContent
+import com.android.build.api.transform.Status
 import com.android.build.gradle.AppExtension
 import com.google.common.collect.ImmutableSet
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.ss.android.ugc.bytex.common.CommonPlugin
 import com.ss.android.ugc.bytex.common.Constants
 import com.ss.android.ugc.bytex.common.TransformConfiguration
+import com.ss.android.ugc.bytex.common.visitor.ClassVisitorChain
 import com.ss.android.ugc.bytex.transformer.TransformEngine
+import com.ss.android.ugc.bytex.transformer.cache.FileData
 import com.zyhang.startup.plugin.bytex.StartupContext
 import com.zyhang.startup.plugin.bytex.StartupExtension
 import com.zyhang.startup.plugin.model.StartupInfo
 import com.zyhang.startup.plugin.sort.StartupSort
-import com.zyhang.startup.plugin.utils.appendLine
 import com.zyhang.startup.plugin.utils.redirect
 import com.zyhang.startup.plugin.utils.touch
 import org.gradle.api.Project
@@ -24,7 +27,8 @@ import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import java.io.File
-import java.util.*
+import java.io.FileOutputStream
+import java.io.PrintWriter
 import java.util.concurrent.ConcurrentHashMap
 
 class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
@@ -43,8 +47,10 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
         private const val CLASS_ST_DATA = "$PKG/model/STData"
     }
 
-    private val targetClasses: MutableSet<String> = Collections.newSetFromMap(ConcurrentHashMap())
+    // link RelativePath to StartupInfo
     private val targetInfoMap: MutableMap<String, StartupInfo> = ConcurrentHashMap()
+    private lateinit var cacheInfoMapFile: File
+    private val gson by lazy { Gson() }
 
     override fun getContext(
         project: Project?,
@@ -52,11 +58,53 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
         extension: StartupExtension?
     ): StartupContext = StartupContext(project, android, extension)
 
+    override fun init(transformer: TransformEngine) {
+        super.init(transformer)
+
+        cacheInfoMapFile = File(context.buildDir(), "cacheInfoMap.json")
+
+        // if isIncremental
+        // fetch info map cache
+        if (transformer.context.isIncremental) {
+            if (cacheInfoMapFile.exists() && cacheInfoMapFile.isFile) {
+                val jsonData = String(cacheInfoMapFile.inputStream().readBytes())
+                val cacheInfoMap = gson.fromJson<Map<String, StartupInfo>>(
+                    jsonData,
+                    object : TypeToken<Map<String, StartupInfo>>() {}.type
+                )
+                context.logger.i("fetch cache info map: $cacheInfoMap")
+                targetInfoMap.putAll(cacheInfoMap)
+            } else {
+                // fallback
+                transformer.context.requestNotIncremental()
+                context.logger.i("cache info map not exists, now requestNotIncremental".also {
+                    println(it)
+                })
+            }
+        }
+    }
+
+    override fun traverseIncremental(fileData: FileData, chain: ClassVisitorChain?) {
+        super.traverseIncremental(fileData, chain)
+
+        // if isIncremental
+        // remove from info map cache if file is removed
+        if (fileData.relativePath.endsWith(CLASS_TARGET_SUFFIX + SdkConstants.DOT_CLASS)
+            && fileData.status == Status.REMOVED
+        ) {
+            targetInfoMap.remove(fileData.relativePath)
+            context.logger.i("remove node ${fileData.relativePath}")
+        }
+    }
+
     override fun traverse(relativePath: String, node: ClassNode) {
         super.traverse(relativePath, node)
         if (node.name.endsWith(CLASS_TARGET_SUFFIX)) {
-            targetClasses.add(node.name)
+            context.logger.i("traverse $relativePath ${node.name}")
 
+            targetInfoMap[relativePath] = StartupInfo.Error // placeholder
+
+            // scan its annotation STInfo meta
             node.visibleAnnotations?.find {
                 it.desc == "L${CLASS_ST_INFO};"
             }?.values?.let {
@@ -64,8 +112,10 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
                 for (i in 0 until it.size step 2) {
                     map[it[i] as String] = it[i + 1]
                 }
-                val info = Gson().fromJson(map["meta"] as String, StartupInfo::class.java)
-                targetInfoMap[node.name] = info
+                val info = gson.fromJson(map["meta"] as String, StartupInfo::class.java)
+                info.nodeName = node.name // set node name
+
+                targetInfoMap[relativePath] = info // override
             }
         }
     }
@@ -73,8 +123,10 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
     override fun afterTransform(engine: TransformEngine) {
         super.afterTransform(engine)
 
-        if (targetClasses.size != targetInfoMap.size) {
-            throw RuntimeException("$TAG something wrong")
+        if (targetInfoMap.any { it.value == StartupInfo.Error }) {
+            val errorInfoRelativePathList =
+                targetInfoMap.filter { it.value == StartupInfo.Error }.map { it.key }
+            throw RuntimeException("$TAG something wrong, maybe is IncrementalBuild issue. errorInfoRelativePathList -> $errorInfoRelativePathList")
         }
         context.logger.i("found target info -> $targetInfoMap")
         val targetInfoList = targetInfoMap.values
@@ -96,6 +148,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
 
         // generate loader class
         try {
+            val targetClasses = targetInfoList.map { it.nodeName }
             // write
             val writer = ClassWriter(ClassWriter.COMPUTE_FRAMES or ClassWriter.COMPUTE_MAXS)
             val cv = object : ClassVisitor(Constants.ASM_API, writer) {}
@@ -160,7 +213,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
             val dest = File(outputDirPath, CLASS_STARTUP_LOADER_INIT + SdkConstants.DOT_CLASS)
             dest.touch()
             writer.toByteArray().redirect(dest)
-            context.logger.i("generated file $dest, length ${dest.length()}".also {
+            context.logger.i("generated $CLASS_STARTUP_LOADER_INIT(${dest.length()}) success[File]:${dest.absolutePath}".also {
                 println(it)
             })
         } catch (e: Exception) {
@@ -168,9 +221,24 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
         }
     }
 
+    override fun afterExecute() {
+        // safe info map cache
+        cacheInfoMapFile.delete()
+        PrintWriter(FileOutputStream(cacheInfoMapFile), true).run {
+            print(gson.toJson(targetInfoMap))
+            flush()
+            close()
+            context.logger.i("save info map cache(${cacheInfoMapFile.length()}) success[File]:${cacheInfoMapFile.absolutePath}".also {
+                kotlin.io.println(it)
+            })
+        }
+
+        super.afterExecute()
+    }
+
     override fun transformConfiguration(): TransformConfiguration {
         return object : TransformConfiguration {
-            override fun isIncremental(): Boolean = false
+            //            override fun isIncremental(): Boolean = false
             override fun consumesFeatureJars(): Boolean = extension.isConsumesFeatureJars()
         }
     }
