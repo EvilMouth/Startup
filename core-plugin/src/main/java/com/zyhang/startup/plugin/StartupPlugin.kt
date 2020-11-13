@@ -123,32 +123,35 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
     override fun afterTransform(engine: TransformEngine) {
         super.afterTransform(engine)
 
+        // check scan
         if (targetInfoMap.any { it.value == StartupInfo.Error }) {
             val errorInfoRelativePathList =
                 targetInfoMap.filter { it.value == StartupInfo.Error }.map { it.key }
             throw RuntimeException("$TAG something wrong, maybe is IncrementalBuild issue. errorInfoRelativePathList -> $errorInfoRelativePathList")
         }
         context.logger.i("found target info -> $targetInfoMap")
+
         val targetInfoList = targetInfoMap.values
 
         // sort and check
         val sort = StartupSort()
-
         val allProcess = targetInfoList.map { it.process }.toSet()
         allProcess.forEach { process ->
             val processName = if (process.isEmpty()) "main" else process
             val list = targetInfoList.filter { it.process == process }
-
             sort.sort(processName, list)
         }
-
         context.logger.i("startup dispatch order below:" + "\n\n" + sort.generateOrder())
         context.logger.i("startup relationship below:" + "\n\n" + sort.generateRelationship())
         context.logger.i("graphviz dot code below:" + "\n\n" + sort.generateGraphviz() + "\n" + "parse dot code in http://magjac.com/graphviz-visual-editor/")
 
         // generate loader class
-        try {
-            val targetClasses = targetInfoList.map { it.nodeName }
+        val targetClasses = targetInfoList.map { it.nodeName }
+        generateStartupLoaderInitClass(targetClasses)
+    }
+
+    private fun generateStartupLoaderInitClass(targetClasses: List<String>) {
+        runCatching {
             // write
             val writer = ClassWriter(ClassWriter.COMPUTE_FRAMES or ClassWriter.COMPUTE_MAXS)
             val cv = object : ClassVisitor(Constants.ASM_API, writer) {}
@@ -216,8 +219,10 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
             context.logger.i("generated $CLASS_STARTUP_LOADER_INIT(${dest.length()}) success[File]:${dest.absolutePath}".also {
                 println(it)
             })
-        } catch (e: Exception) {
-            context.logger.e("generate loader init class error: $e")
+        }.run {
+            if (isFailure) {
+                context.logger.e("generate loader init class error: ${exceptionOrNull()}")
+            }
         }
     }
 
