@@ -88,15 +88,15 @@ tasks.publishPlugin {
     setToken(token)
 }
 
-tasks.create("backupPlugin") {
-    group = "intellij"
-    doFirst {
-        val fileName = "${customPluginName}-${version}.zip"
-        copy {
-            from("./build/distributions/${fileName}")
-            into("./lib/")
-        }.also {
-            println("backupIntellijPlugin isSuccess -> ${it.didWork}")
-        }
-    }
-}
+//tasks.create("backupPlugin") {
+//    group = "intellij"
+//    doFirst {
+//        val fileName = "${customPluginName}-${version}.zip"
+//        copy {
+//            from("./build/distributions/${fileName}")
+//            into("./lib/")
+//        }.also {
+//            println("backupIntellijPlugin isSuccess -> ${it.didWork}")
+//        }
+//    }
+//}
