@@ -3,46 +3,28 @@ ext {
     startup_version = '1.0.0-beta03'
     useMaven = Boolean.parseBoolean(BUILD_WITH_MAVEN)
 
-    implementationCoreBase = this.&implementationCoreBase
-    implementationCore = this.&implementationCore
-    kaptCompiler = this.&kaptCompiler
-    classpathPlugin = this.&classpathPlugin
-
-    mavenEvilMouth = this.&mavenEvilMouth
-    mavenEvilMouthLocal = this.&mavenEvilMouthLocal
+    startupCore = this.&startupCore
+    startupCoreCompiler = this.&startupCoreCompiler
+    startupCorePlugin = this.&startupCorePlugin
 }
 
-def implementationCoreBase() {
-    dependencies {
-        if (useMaven) {
-            implementation "$startup_group:core-base:$startup_version"
-        } else {
-            implementation project(':core-base')
-        }
+def startupCore() {
+    if (useMaven) {
+        return "$startup_group:core:$startup_version"
+    } else {
+        return project(':core')
     }
 }
 
-def implementationCore() {
-    dependencies {
-        if (useMaven) {
-            implementation "$startup_group:core:$startup_version"
-        } else {
-            implementation project(':core')
-        }
+def startupCoreCompiler() {
+    if (useMaven) {
+        return "$startup_group:core-compiler:$startup_version"
+    } else {
+        return project(':core-compiler')
     }
 }
 
-def kaptCompiler() {
-    dependencies {
-        if (useMaven) {
-            kapt "$startup_group:core-compiler:$startup_version"
-        } else {
-            kapt project(':core-compiler')
-        }
-    }
-}
-
-String classpathPlugin() {
+def startupCorePlugin() {
     if (useMaven) {
         return "$startup_group:core-plugin:$startup_version"
     } else {

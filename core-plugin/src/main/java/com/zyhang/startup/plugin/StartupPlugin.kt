@@ -6,7 +6,7 @@ import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Status
 import com.android.build.gradle.AppExtension
 import com.google.common.collect.ImmutableSet
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.ss.android.ugc.bytex.common.CommonPlugin
 import com.ss.android.ugc.bytex.common.Constants
@@ -50,7 +50,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
     // link RelativePath to StartupInfo
     private val targetInfoMap: MutableMap<String, StartupInfo> = ConcurrentHashMap()
     private lateinit var cacheInfoMapFile: File
-    private val gson by lazy { Gson() }
+    private val gson by lazy { GsonBuilder().setPrettyPrinting().create() }
 
     override fun getContext(
         project: Project?,
@@ -72,7 +72,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
                     jsonData,
                     object : TypeToken<Map<String, StartupInfo>>() {}.type
                 )
-                context.logger.i("fetch cache info map: $cacheInfoMap")
+                context.logger.i("fetch cache info map: ${gson.toJson(cacheInfoMap)}")
                 targetInfoMap.putAll(cacheInfoMap)
             } else {
                 // fallback
@@ -129,7 +129,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
                 targetInfoMap.filter { it.value == StartupInfo.Error }.map { it.key }
             throw RuntimeException("$TAG something wrong, maybe is IncrementalBuild issue. errorInfoRelativePathList -> $errorInfoRelativePathList")
         }
-        context.logger.i("found target info -> $targetInfoMap")
+        context.logger.i("found target info -> ${gson.toJson(targetInfoMap)}")
 
         val targetInfoList = targetInfoMap.values
 
