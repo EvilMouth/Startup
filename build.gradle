@@ -4,7 +4,7 @@ buildscript {
     println "is use remote maven: $useMaven"
     ext {
         gradle_version = '4.1.1'
-        kotlin_version = "1.4.10"
+        kotlin_version = "1.4.20"
         bytex_version = "0.2.3"
         jfrog_version = '1.8.4'
     }
