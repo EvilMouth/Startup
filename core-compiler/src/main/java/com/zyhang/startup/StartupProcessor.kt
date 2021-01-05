@@ -47,6 +47,7 @@ class StartupProcessor : BaseProcessor() {
             }
             val blockWhenAsync = startupTaskRegister.blockWhenAsync
             val process = startupTaskRegister.process
+            val priority = startupTaskRegister.priority
             val clsName = element.className()
             val clsSimpleName = element.simpleName.toString()
 
@@ -57,7 +58,7 @@ class StartupProcessor : BaseProcessor() {
                         .addMember(
                             "meta",
                             "\$S",
-                            buildMeta(id, idDependencies, executorFactory, process)
+                            buildMeta(id, idDependencies, executorFactory, process, priority)
                         )
                         .build()
                 )
@@ -75,6 +76,7 @@ class StartupProcessor : BaseProcessor() {
                             blockWhenAsync,
                             process
                         )
+                        .addStatement("setPriority(\$L)", priority)
                         .build()
                 )
                 .addMethod(
@@ -115,7 +117,8 @@ class StartupProcessor : BaseProcessor() {
             id: String,
             idDependencies: Array<String>,
             executorFactory: TypeMirror?,
-            processName: String
+            processName: String,
+            priority: Int,
         ): String {
             val map: MutableMap<String, Any> = HashMap()
             map["id"] = id
@@ -123,6 +126,7 @@ class StartupProcessor : BaseProcessor() {
             map["async"] =
                 BlockExecutor.Factory::class.java.canonicalName != executorFactory.toString()
             map["process"] = processName
+            map["priority"] = priority
             return Gson().toJson(map)
         }
 

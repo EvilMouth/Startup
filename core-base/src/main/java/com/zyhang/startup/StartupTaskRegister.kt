@@ -36,4 +36,9 @@ annotation class StartupTaskRegister(
      * todo 不分进程执行的任务？
      */
     val process: String = "",
+    /**
+     * 优先级越大，任务越快分发
+     * 如果两个同度任务优先级一致，该框架不能保证分发顺序
+     */
+    val priority: Int = 0,
 )

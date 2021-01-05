@@ -28,7 +28,7 @@ fun List<StartupInfo>.sortString(): String {
     return buildString {
         this@sortString.forEachIndexed { index, iStartup ->
             if (index != 0) {
-                append("->")
+                append(" -> ")
             }
             append(iStartup.id)
         }

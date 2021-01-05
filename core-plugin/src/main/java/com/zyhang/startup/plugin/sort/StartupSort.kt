@@ -17,13 +17,14 @@ class StartupSort {
     private val orderGenerator = StringBuilder()
     private val graphvizGenerator = GraphvizGenerator()
 
-    fun sort(process: String, list: List<StartupInfo>) {
+    fun sort(process: String, _list: List<StartupInfo>) {
         val iStartupMap = hashMapOf<String, StartupInfo>() // 任务key: 任务
         val inDegreeMap = hashMapOf<String, Int>() // 任务key: 任务入度
         val zeroDeque = ArrayDeque<String>() // 零级任务队列
         val iStartupChildrenMap = hashMapOf<String, MutableList<String>>() // 任务key: 子任务key集合
 
         // 初始化一些辅助信息
+        val list = _list.sortedByDescending { it.priority } // 优先级排序
         list.forEach { iStartup ->
             val uniqueKey = iStartup.id
             // 不允许重复注册同一个任务

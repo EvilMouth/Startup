@@ -13,7 +13,7 @@ internal interface StartupSort {
             var sortResult: StartupSortResult? = null
             trace("sort") {
                 val cost = measureTimeMillis {
-                    sortResult = sortInternal(list)
+                    sortResult = sortInternal(list.sortedByDescending { it.priority }) // 优先级排序
                 }
                 log { "$TAG sort cost $cost ms" }
             }
@@ -91,7 +91,7 @@ internal interface StartupSort {
                     appendLine("$TAG ${title}:")
                     list.forEachIndexed { index, iStartup ->
                         if (index != 0) {
-                            append("->")
+                            append(" -> ")
                         }
                         append(iStartup.id)
                     }

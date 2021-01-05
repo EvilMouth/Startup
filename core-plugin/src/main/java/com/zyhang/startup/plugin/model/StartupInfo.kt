@@ -5,9 +5,10 @@ data class StartupInfo(
     val id: String,
     val idDependencies: List<String>,
     val async: Boolean,
-    val process: String
+    val process: String,
+    val priority: Int,
 ) {
     companion object {
-        val Error = StartupInfo("Error", "Error", listOf("Error"), true, "Error")
+        val Error = StartupInfo("Error", "Error", listOf("Error"), true, "Error", 0)
     }
 }

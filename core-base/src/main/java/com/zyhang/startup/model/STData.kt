@@ -4,14 +4,21 @@ import com.zyhang.startup.StartupTask
 import com.zyhang.startup.executor.BlockExecutor
 import com.zyhang.startup.executor.ExecutorFactory
 
-// 由StartupProcessor生成
+/**
+ * 由StartupProcessor生成
+ * @see com.zyhang.startup.StartupTaskRegister
+ * @see com.zyhang.startup.StartupProcessor
+ */
 abstract class STData(
     val id: String,
     val idDependencies: Array<String>,
     val executorFactory: Class<out ExecutorFactory> = BlockExecutor.Factory::class.java,
     val blockWhenAsync: Boolean = false,
-    val process: String = "",
+    val process: String = ""
 ) : StartupTask() {
+
+    //
+    var priority: Int = 0
 
     /**
      * 是否是同步任务
