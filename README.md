@@ -16,6 +16,7 @@ Android多模块任务启动方案
 - 编译期生成启动任务执行顺序以及依赖关系
 - 已配置混淆
 - 导航插件帮助在**StartupTask**之间快速跳转
+- 同度任务支持优先级配置（1.0.0-beta05）
 
 ## 使用
 
@@ -113,7 +114,12 @@ annotation class StartupTaskRegister(
      * 进程名，默认空表示在主进程
      * 不允许两个不同进程的任务之间有依赖关系的
      */
-    val process: String = ""
+    val process: String = "",
+    /**
+     * 优先级越大，任务越快分发
+     * 如果两个同度任务优先级一致，该框架不能保证分发顺序
+     */
+    val priority: Int = 0,
 )
 ```
 
