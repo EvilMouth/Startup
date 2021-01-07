@@ -1,6 +1,6 @@
 ext {
     startup_group = 'maven.evilmouth.startup'
-    startup_version = '1.0.0-beta05'
+    startup_version = '1.0.0-beta06'
     useMaven = Boolean.parseBoolean(BUILD_WITH_MAVEN)
 
     startupCore = this.&startupCore
