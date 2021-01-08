@@ -44,6 +44,10 @@ allprojects {
 dependencies {
     implementation "maven.evilmouth.startup:core:$startup_version"
 }
+
+// in app/build.gradle
+apply plugin: 'bytex'
+apply plugin: 'com.zyhang.startup'
 ```
 
 - 实现一个 StartupTask
