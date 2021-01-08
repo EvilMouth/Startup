@@ -16,7 +16,7 @@ Android多模块任务启动方案
 - 编译期生成启动任务执行顺序以及依赖关系
 - 已配置混淆
 - 导航插件帮助在**StartupTask**之间快速跳转
-- 同度任务支持优先级配置（1.0.0-beta05）
+- 同度任务支持优先级配置（1.0.0-beta05+）
 
 ## 使用
 
@@ -130,13 +130,13 @@ annotation class StartupTaskRegister(
 ```
 process->main
 任务排序:
-g.G->f.F->a.A->h.H->b.B->e.E->i.I->d.D->c.C
+g.G -> f.F -> a.A -> h.H -> b.B -> e.E -> i.I -> d.D -> c.C
 同步任务分发顺序:
-a.A->h.H->e.E->i.I
+a.A -> h.H -> e.E -> i.I
 异步任务分发顺序:
-g.G->f.F->b.B->d.D->c.C
+g.G -> f.F -> b.B -> d.D -> c.C
 App启动时任务分发顺序:
-g.G->f.F->b.B->d.D->c.C->a.A->h.H->e.E->i.I
+g.G -> f.F -> b.B -> d.D -> c.C -> a.A -> h.H -> e.E -> i.I
 ```
 
 <img src="./img/1603941343055.jpg"></img>
