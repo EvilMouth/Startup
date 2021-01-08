@@ -2,3 +2,4 @@
 -keepclassmembers class com.zyhang.startup.generated.StartupLoaderInit {
     void init(***);
 }
+-keep class * extends com.zyhang.startup.executor.ExecutorFactory
