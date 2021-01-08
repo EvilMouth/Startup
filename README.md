@@ -76,9 +76,7 @@ class B : AndroidStartupTask() {
 
 ### Startup Navigator 导航
 
-从 [Release](https://github.com/EvilMouth/Startup/releases) 下载 Navigator.zip，导入到 Android Studio
-
-或直接在 [Marketplace](https://plugins.jetbrains.com/plugin/15338-startup-navigator?preview=true) 搜索下载
+插件已发布，可直接在 [Marketplace](https://plugins.jetbrains.com/plugin/15338-startup-navigator?preview=true) 搜索下载
 
 <img src="./img/WX20201106-124004@2x.png"></img>
 
