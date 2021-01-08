@@ -1,12 +1,15 @@
 package com.zyhang.startup.plugin.sort
 
 import com.zyhang.startup.plugin.graphviz.GraphvizGenerator
-import com.zyhang.startup.plugin.model.StartupInfo
+import com.zyhang.startup.plugin.model.StartupTaskRegisterInfo
 import com.zyhang.startup.plugin.utils.appendDivider
 import com.zyhang.startup.plugin.utils.appendLine
 import com.zyhang.startup.plugin.utils.sortString
 import java.util.ArrayDeque
 
+/**
+ * 编译期排序，整理，检验，生成报告
+ */
 class StartupSort {
 
     companion object {
@@ -17,8 +20,8 @@ class StartupSort {
     private val orderGenerator = StringBuilder()
     private val graphvizGenerator = GraphvizGenerator()
 
-    fun sort(process: String, _list: List<StartupInfo>) {
-        val iStartupMap = hashMapOf<String, StartupInfo>() // 任务key: 任务
+    fun sort(process: String, _list: List<StartupTaskRegisterInfo>) {
+        val iStartupMap = hashMapOf<String, StartupTaskRegisterInfo>() // 任务key: 任务
         val inDegreeMap = hashMapOf<String, Int>() // 任务key: 任务入度
         val zeroDeque = ArrayDeque<String>() // 零级任务队列
         val iStartupChildrenMap = hashMapOf<String, MutableList<String>>() // 任务key: 子任务key集合
@@ -99,9 +102,9 @@ class StartupSort {
             zeroDeque.forEach { deep(it) }
         }
 
-        val mainResult = mutableListOf<StartupInfo>() // 主线程执行的任务
-        val prefixResult = mutableListOf<StartupInfo>() // 异步任务，插在前面
-        val orderResult = mutableListOf<StartupInfo>() // 最终排序顺序，但不是执行顺序
+        val mainResult = mutableListOf<StartupTaskRegisterInfo>() // 主线程执行的任务
+        val prefixResult = mutableListOf<StartupTaskRegisterInfo>() // 异步任务，插在前面
+        val orderResult = mutableListOf<StartupTaskRegisterInfo>() // 最终排序顺序，但不是执行顺序
 
         // 开始排序
         while (zeroDeque.isNotEmpty()) {

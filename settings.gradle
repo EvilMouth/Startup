@@ -2,7 +2,6 @@ if (Boolean.parseBoolean(BUILD_WITH_INTELLIJ_PLUGIN)) {
     include ':core-intellij-plugin'
 }
 include ':core-plugin'
-include ':core-compiler'
 include ':core'
 include ':core-base'
 include ':f'

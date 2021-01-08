@@ -19,5 +19,7 @@ class MainActivity : AppCompatActivity() {
         binding.pa.setOnClickListener {
             startActivity(Intent(this, PAActivity::class.java))
         }
+
+        binding.pa.performClick()
     }
 }

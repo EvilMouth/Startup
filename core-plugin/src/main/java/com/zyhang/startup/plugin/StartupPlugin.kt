@@ -16,7 +16,7 @@ import com.ss.android.ugc.bytex.transformer.TransformEngine
 import com.ss.android.ugc.bytex.transformer.cache.FileData
 import com.zyhang.startup.plugin.bytex.StartupContext
 import com.zyhang.startup.plugin.bytex.StartupExtension
-import com.zyhang.startup.plugin.model.StartupInfo
+import com.zyhang.startup.plugin.model.StartupTaskRegisterInfo
 import com.zyhang.startup.plugin.sort.StartupSort
 import com.zyhang.startup.plugin.utils.redirect
 import com.zyhang.startup.plugin.utils.touch
@@ -31,26 +31,37 @@ import java.io.FileOutputStream
 import java.io.PrintWriter
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * 编译期检测启动任务链合法性
+ * 包括但不限于
+ * 1、id重复
+ * 2、依赖循环
+ * 3、任务缺失
+ * 4、编写正确，需要继承StartupTask并且注解StartupTaskRegister
+ */
 class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
 
     companion object {
-        private const val TAG = "StartupPlugin"
-
-        private const val CLASS_TARGET_SUFFIX = "__STData"
         private const val PKG = "com/zyhang/startup"
-        private const val CLASS_ST_INFO = "$PKG/model/STInfo"
         private const val GEN_PKG = "$PKG/generated"
         private const val CLASS_STARTUP_LOADER_INIT = "$GEN_PKG/StartupLoaderInit"
         private const val CLASS_STARTUP_CORE = "$PKG/StartupCore"
         private const val METHOD_INIT = "init"
         private const val METHOD_REGISTER = "register"
-        private const val CLASS_ST_DATA = "$PKG/model/STData"
+
+        private const val CLASS_STARTUP_TASK = "$PKG/StartupTask"
+        private const val CLASS_STARTUP_TASK_REGISTER = "$PKG/StartupTaskRegister"
+        private const val CLASS_BLOCK_EXECUTOR_FACTORY = "$PKG/executor/BlockExecutor\$Factory"
     }
 
-    // link RelativePath to StartupInfo
-    private val targetInfoMap: MutableMap<String, StartupInfo> = ConcurrentHashMap()
+    /**
+     * incremental build support
+     */
+    // link RelativePath to StartupTaskRegisterInfo
+    private val targetInfoMap = ConcurrentHashMap<String, StartupTaskRegisterInfo>()
     private lateinit var cacheInfoMapFile: File
-    private val gson by lazy { GsonBuilder().setPrettyPrinting().create() }
+
+    private val gson = GsonBuilder().setPrettyPrinting().create()
 
     override fun getContext(
         project: Project?,
@@ -68,9 +79,9 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
         if (transformer.context.isIncremental) {
             if (cacheInfoMapFile.exists() && cacheInfoMapFile.isFile) {
                 val jsonData = String(cacheInfoMapFile.inputStream().readBytes())
-                val cacheInfoMap = gson.fromJson<Map<String, StartupInfo>>(
+                val cacheInfoMap = gson.fromJson<Map<String, StartupTaskRegisterInfo>>(
                     jsonData,
-                    object : TypeToken<Map<String, StartupInfo>>() {}.type
+                    object : TypeToken<Map<String, StartupTaskRegisterInfo>>() {}.type
                 )
                 context.logger.i("fetch cache info map: ${gson.toJson(cacheInfoMap)}")
                 targetInfoMap.putAll(cacheInfoMap)
@@ -84,54 +95,64 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
         }
     }
 
+    /**
+     * when incremental build
+     * removed status go here only
+     */
     override fun traverseIncremental(fileData: FileData, chain: ClassVisitorChain?) {
         super.traverseIncremental(fileData, chain)
 
-        // if isIncremental
-        // remove from info map cache if file is removed
-        if (fileData.relativePath.endsWith(CLASS_TARGET_SUFFIX + SdkConstants.DOT_CLASS)
-            && fileData.status == Status.REMOVED
-        ) {
-            targetInfoMap.remove(fileData.relativePath)
-            context.logger.i("remove node ${fileData.relativePath}")
+        // remove from info map cache if file is matched
+        if (fileData.status == Status.REMOVED) {
+            targetInfoMap.remove(fileData.relativePath)?.let {
+                context.logger.i("remove node ${it.nodeName}")
+            }
         }
     }
 
     override fun traverse(relativePath: String, node: ClassNode) {
         super.traverse(relativePath, node)
-        if (node.name.endsWith(CLASS_TARGET_SUFFIX)) {
+
+        // filter classes if use @StartupTaskRegister
+        node.visibleAnnotations?.find {
+            it.desc == "L${CLASS_STARTUP_TASK_REGISTER};"
+        }?.runCatching {
             context.logger.i("traverse $relativePath ${node.name}")
-
-            targetInfoMap[relativePath] = StartupInfo.Error // placeholder
-
-            // scan its annotation STInfo meta
-            node.visibleAnnotations?.find {
-                it.desc == "L${CLASS_ST_INFO};"
-            }?.values?.let {
-                val map = hashMapOf<String, Any>()
-                for (i in 0 until it.size step 2) {
-                    map[it[i] as String] = it[i + 1]
-                }
-                val info = gson.fromJson(map["meta"] as String, StartupInfo::class.java)
-                info.nodeName = node.name // set node name
-
-                targetInfoMap[relativePath] = info // override
+            val map = mutableMapOf<String, Any>()
+            for (i in 0 until values.size step 2) {
+                map[values[i] as String] = values[i + 1]
             }
+            val info = StartupTaskRegisterInfo(node.name, map["id"] as String)
+            map["idDependencies"]?.let {
+                info.idDependencies = it as List<String>
+            }
+            map["executorFactory"]?.let {
+                info.async = "L${CLASS_BLOCK_EXECUTOR_FACTORY};" != it
+            }
+            map["blockWhenAsync"]?.let {
+                info.blockWhenAsync = it as Boolean
+            }
+            map["process"]?.let {
+                info.process = it as String
+            }
+            map["priority"]?.let {
+                info.priority = it as Int
+            }
+            targetInfoMap[relativePath] = info
         }
     }
 
     override fun afterTransform(engine: TransformEngine) {
         super.afterTransform(engine)
 
-        // check scan
-        if (targetInfoMap.any { it.value == StartupInfo.Error }) {
-            val errorInfoRelativePathList =
-                targetInfoMap.filter { it.value == StartupInfo.Error }.map { it.key }
-            throw RuntimeException("$TAG something wrong, maybe is IncrementalBuild issue. errorInfoRelativePathList -> $errorInfoRelativePathList")
+        // check target class if is a StartupTask
+        val targetInfoList = targetInfoMap.values.filter {
+            context.classGraph.instanceofClass(it.nodeName, CLASS_STARTUP_TASK)
         }
-        context.logger.i("found target info -> ${gson.toJson(targetInfoMap)}")
-
-        val targetInfoList = targetInfoMap.values
+        if (targetInfoList.isEmpty()) {
+            return
+        }
+        context.logger.i("found target info -> \n${gson.toJson(targetInfoList)}")
 
         // sort and check
         val sort = StartupSort()
@@ -186,7 +207,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
                     Opcodes.INVOKEVIRTUAL,
                     CLASS_STARTUP_CORE,
                     METHOD_REGISTER,
-                    "(L${CLASS_ST_DATA};)V",
+                    "(L${CLASS_STARTUP_TASK};)V",
                     false
                 )
             }
@@ -243,7 +264,6 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
 
     override fun transformConfiguration(): TransformConfiguration {
         return object : TransformConfiguration {
-            //            override fun isIncremental(): Boolean = false
             override fun consumesFeatureJars(): Boolean = extension.isConsumesFeatureJars()
         }
     }

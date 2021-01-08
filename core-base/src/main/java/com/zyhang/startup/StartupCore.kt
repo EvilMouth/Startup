@@ -3,14 +3,12 @@ package com.zyhang.startup
 import com.zyhang.startup.dispatcher.StartupDispatcher
 import com.zyhang.startup.log.SLogger
 import com.zyhang.startup.sort.StartupSort
-import com.zyhang.startup.model.STData
 import com.zyhang.startup.runtime.StartupRuntime
 import com.zyhang.startup.ship.StartupShipUnLoader
 import com.zyhang.startup.trace.STracer
 import com.zyhang.startup.utils.*
 import java.lang.reflect.InvocationTargetException
 import java.util.*
-
 
 /**
  * startup launch core
@@ -27,7 +25,7 @@ open class StartupCore(private val shipStuff: Any?) : StartupShipUnLoader {
     open var logger: SLogger = SLogger.Companion.CommonSLogger()
     open var tracer: STracer = STracer.Companion.CommonSTracer()
 
-    open val allStartup = mutableListOf<STData>()
+    open val allStartup = mutableListOf<StartupTask>()
 
     open fun startup() {
         StartupRuntime.core = this
@@ -73,7 +71,7 @@ open class StartupCore(private val shipStuff: Any?) : StartupShipUnLoader {
      * see com.zyhang.startup.generated.StartupLoaderInit
      * see com.zyhang.startup.plugin.StartupPlugin
      */
-    open fun register(startup: STData) {
+    open fun register(startup: StartupTask) {
         allStartup.add(startup)
     }
 

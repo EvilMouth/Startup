@@ -1,7 +1,6 @@
 package com.zyhang.startup
 
 import android.content.Context
-import com.zyhang.startup.model.STData
 import com.zyhang.startup.trace.AndroidSTracer
 import com.zyhang.startup.trace.STracer
 import com.zyhang.startup.utils.ProcessUtils
@@ -10,7 +9,7 @@ class StartupCoreAndroid(private val context: Context) : StartupCore(context) {
 
     override var tracer: STracer = AndroidSTracer()
 
-    override fun register(startup: STData) {
+    override fun register(startup: StartupTask) {
         // 区分进程
         if (acceptProcess(startup.process)) {
             super.register(startup)

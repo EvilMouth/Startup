@@ -44,7 +44,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation startupCore()
-    kapt startupCoreCompiler()
 
-    implementation project(':a')
+    api project(':a')
 }

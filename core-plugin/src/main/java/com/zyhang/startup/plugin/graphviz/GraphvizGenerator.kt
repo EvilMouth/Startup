@@ -3,6 +3,9 @@ package com.zyhang.startup.plugin.graphviz
 import com.zyhang.startup.plugin.utils.appendLine
 import com.zyhang.startup.plugin.utils.appendTab
 
+/**
+ * 辅助生成dot文件
+ */
 class GraphvizGenerator : GraphvizNodePlug {
 
     private val dotSB = StringBuilder()

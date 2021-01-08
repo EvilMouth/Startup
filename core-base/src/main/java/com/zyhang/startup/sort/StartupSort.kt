@@ -1,41 +1,50 @@
 package com.zyhang.startup.sort
 
-import com.zyhang.startup.model.STData
+import com.zyhang.startup.StartupTask
 import com.zyhang.startup.utils.log
 import com.zyhang.startup.utils.trace
 import kotlin.system.measureTimeMillis
 
+/**
+ * sort startup task at app runtime
+ * return sorted startup list by async + sync
+ */
 internal interface StartupSort {
     companion object {
         private const val TAG = "StartupSort"
 
-        fun sort(list: List<STData>): StartupSortResult {
+        fun sort(list: List<StartupTask>): StartupSortResult {
             var sortResult: StartupSortResult? = null
             trace("sort") {
                 val cost = measureTimeMillis {
-                    sortResult = sortInternal(list.sortedByDescending { it.priority }) // 优先级排序
+                    sortResult = sortInternal(
+                        // priority sort first
+                        list.sortedByDescending { startup ->
+                            startup.priority
+                        }
+                    )
                 }
                 log { "$TAG sort cost $cost ms" }
             }
             return sortResult!!
         }
 
-        private fun sortInternal(list: List<STData>): StartupSortResult {
-            val iStartupMap = hashMapOf<String, STData>() // 任务key: 任务
+        private fun sortInternal(list: List<StartupTask>): StartupSortResult {
+            val iStartupMap = hashMapOf<String, StartupTask>() // 任务key: 任务
             val inDegreeMap = hashMapOf<String, Int>() // 任务key: 任务入度
             val zeroDeque = ArrayDeque<String>() // 零级任务队列
             val iStartupChildrenMap =
                 hashMapOf<String, MutableList<String>>() // 任务key: 子任务key集合
 
             // 初始化一些辅助信息
-            list.forEach { iStartup ->
-                val uniqueKey = iStartup.id
+            list.forEach { startup ->
+                val uniqueKey = startup.id
                 // 不允许重复注册同一个任务
                 if (iStartupMap.containsKey(uniqueKey)) {
-                    throw RuntimeException("duplicate add: ${iStartup.id} $uniqueKey")
+                    throw RuntimeException("duplicate add: ${startup.id} $uniqueKey")
                 }
-                iStartupMap[uniqueKey] = iStartup
-                val dependencies = iStartup.idDependencies
+                iStartupMap[uniqueKey] = startup
+                val dependencies = startup.idDependencies
                 // 保存入度
                 inDegreeMap[uniqueKey] = dependencies.size
                 if (!dependencies.isNullOrEmpty()) {
@@ -52,17 +61,17 @@ internal interface StartupSort {
                 }
             }
 
-            val mainResult = mutableListOf<STData>() // 主线程执行的任务
-            val prefixResult = mutableListOf<STData>() // 异步任务，插在前面
-            val orderResult = mutableListOf<STData>() // 最终排序顺序，但不是执行顺序
+            val mainResult = mutableListOf<StartupTask>() // 主线程执行的任务
+            val prefixResult = mutableListOf<StartupTask>() // 异步任务，插在前面
+            val orderResult = mutableListOf<StartupTask>() // 最终排序顺序，但不是执行顺序
 
             // 开始排序
             while (zeroDeque.isNotEmpty()) {
                 val uniqueKey = zeroDeque.removeFirst()
-                iStartupMap[uniqueKey]!!.let { iStartup ->
-                    orderResult.add(iStartup)
-                    val targetResult = if (iStartup.isSync) mainResult else prefixResult
-                    targetResult.add(iStartup)
+                iStartupMap[uniqueKey]!!.let { startup ->
+                    orderResult.add(startup)
+                    val targetResult = if (startup.isSync) mainResult else prefixResult
+                    targetResult.add(startup)
                 }
                 iStartupChildrenMap[uniqueKey]?.forEach { childUniqueKey ->
                     inDegreeMap[childUniqueKey] = inDegreeMap[childUniqueKey]?.minus(1) ?: 0
@@ -85,15 +94,15 @@ internal interface StartupSort {
             return StartupSortResult(result, iStartupMap, iStartupChildrenMap)
         }
 
-        private fun printResult(title: CharSequence, list: List<STData>) {
+        private fun printResult(title: CharSequence, list: List<StartupTask>) {
             log {
                 buildString {
                     appendLine("$TAG ${title}:")
-                    list.forEachIndexed { index, iStartup ->
+                    list.forEachIndexed { index, startup ->
                         if (index != 0) {
                             append(" -> ")
                         }
-                        append(iStartup.id)
+                        append(startup.id)
                     }
                 }
             }

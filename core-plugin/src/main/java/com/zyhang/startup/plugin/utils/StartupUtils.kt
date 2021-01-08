@@ -1,6 +1,6 @@
 package com.zyhang.startup.plugin.utils
 
-import com.zyhang.startup.plugin.model.StartupInfo
+import com.zyhang.startup.plugin.model.StartupTaskRegisterInfo
 import java.io.File
 import java.io.InputStream
 
@@ -24,7 +24,7 @@ fun StringBuilder.appendDivider(): StringBuilder {
     return appendLine("=========================================================================")
 }
 
-fun List<StartupInfo>.sortString(): String {
+fun List<StartupTaskRegisterInfo>.sortString(): String {
     return buildString {
         this@sortString.forEachIndexed { index, iStartup ->
             if (index != 0) {

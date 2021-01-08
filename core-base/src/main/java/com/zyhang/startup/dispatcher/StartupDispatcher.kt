@@ -1,12 +1,13 @@
 package com.zyhang.startup.dispatcher
 
+import com.zyhang.startup.StartupTask
 import com.zyhang.startup.executor.ExecutorFactory
-import com.zyhang.startup.model.STData
 import com.zyhang.startup.sort.StartupSortResult
 import com.zyhang.startup.utils.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
 import kotlin.system.measureTimeMillis
 
 // dispatch startup task
@@ -17,10 +18,10 @@ internal class StartupDispatcher(sortResult: StartupSortResult) {
     }
 
     // 任务集合
-    private val startupList: List<STData> = sortResult.startupList
+    private val startupList: List<StartupTask> = sortResult.startupList
 
     // 任务key: 任务
-    private val startupMap: Map<String, STData> = sortResult.startupMap
+    private val startupMap: Map<String, StartupTask> = sortResult.startupMap
 
     // 任务key: 子任务key集合
     private val startupChildrenMap: Map<String, List<String>> = sortResult.startupChildrenMap
@@ -55,7 +56,7 @@ internal class StartupDispatcher(sortResult: StartupSortResult) {
         }
     }
 
-    private fun dispatch(startup: STData) {
+    private fun dispatch(startup: StartupTask) {
         log { "$TAG ${startup.id} dispatching" }
         startup.executorFactory.getInstance().executor().execute {
             var start = System.currentTimeMillis()
@@ -76,7 +77,7 @@ internal class StartupDispatcher(sortResult: StartupSortResult) {
     }
 
     @Synchronized
-    private fun onStartupCompleted(startup: STData) {
+    private fun onStartupCompleted(startup: StartupTask) {
         log { "$TAG ${startup.id} wait for ${startup.awaitTime}ms and startup cost ${startup.startupTime}ms" }
         if (startup.isBlock) {
             // 释放总线程（App启动线程）
@@ -95,17 +96,17 @@ internal class StartupDispatcher(sortResult: StartupSortResult) {
     //////
 
     // 单例
-    private fun Class<out ExecutorFactory>.getInstance(): ExecutorFactory {
-        return executorFactoryCache[this] ?: run {
-            val newFactory = this.newInstance()
-            executorFactoryCache[this] = newFactory
+    private fun KClass<out ExecutorFactory>.getInstance(): ExecutorFactory {
+        return executorFactoryCache[java] ?: run {
+            val newFactory = java.newInstance()
+            executorFactoryCache[java] = newFactory
             newFactory
         }
     }
 
     // 获取指定任务的latch
     @Synchronized
-    private fun STData.myCountDownLatch(): CountDownLatch {
+    private fun StartupTask.myCountDownLatch(): CountDownLatch {
         val uniqueKey = this.id
         return countDownLatchMap[uniqueKey] ?: run {
             val newLatch = CountDownLatch(this.idDependencies.size)
