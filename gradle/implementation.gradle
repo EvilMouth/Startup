@@ -1,10 +1,9 @@
 ext {
     startup_group = 'maven.evilmouth.startup'
-    startup_version = '1.0.0-beta06'
+    startup_version = '1.0.1-beta02'
     useMaven = Boolean.parseBoolean(BUILD_WITH_MAVEN)
 
     startupCore = this.&startupCore
-    startupCoreCompiler = this.&startupCoreCompiler
     startupCorePlugin = this.&startupCorePlugin
 }
 
@@ -13,14 +12,6 @@ def startupCore() {
         return "$startup_group:core:$startup_version"
     } else {
         return project(':core')
-    }
-}
-
-def startupCoreCompiler() {
-    if (useMaven) {
-        return "$startup_group:core-compiler:$startup_version"
-    } else {
-        return project(':core-compiler')
     }
 }
 
