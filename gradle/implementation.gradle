@@ -3,12 +3,16 @@ ext {
     startup_version = '1.0.1-beta02'
     useMaven = Boolean.parseBoolean(BUILD_WITH_MAVEN)
 
+    useLocalMaven = Boolean.parseBoolean(BUILD_WITH_LOCAL_MAVEN)
+
     startupCore = this.&startupCore
     startupCorePlugin = this.&startupCorePlugin
 }
 
 def startupCore() {
-    if (useMaven) {
+    if (useLocalMaven) {
+        return 'net.evilmouth:core:1.0.0-SNAPSHOT'
+    } else if (useMaven) {
         return "$startup_group:core:$startup_version"
     } else {
         return project(':core')
@@ -16,7 +20,9 @@ def startupCore() {
 }
 
 def startupCorePlugin() {
-    if (useMaven) {
+    if (useLocalMaven) {
+        return 'net.evilmouth:core-plugin:1.0.0-SNAPSHOT'
+    } else if (useMaven) {
         return "$startup_group:core-plugin:$startup_version"
     } else {
         return 'net.evilmouth:core-plugin:1.0.0-SNAPSHOT'

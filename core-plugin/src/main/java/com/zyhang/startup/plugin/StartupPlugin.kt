@@ -1,6 +1,5 @@
 package com.zyhang.startup.plugin
 
-import com.android.SdkConstants
 import com.android.build.api.transform.Format
 import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Status
@@ -115,7 +114,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
 
         // filter classes if use @StartupTaskRegister
         node.visibleAnnotations?.find {
-            it.desc == "L${CLASS_STARTUP_TASK_REGISTER};"
+            it.desc == "L$CLASS_STARTUP_TASK_REGISTER;"
         }?.runCatching {
             context.logger.i("traverse $relativePath ${node.name}")
             val map = mutableMapOf<String, Any>()
@@ -127,7 +126,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
                 info.idDependencies = it as List<String>
             }
             map["executorFactory"]?.let {
-                info.async = "L${CLASS_BLOCK_EXECUTOR_FACTORY};" != it
+                info.async = "L$CLASS_BLOCK_EXECUTOR_FACTORY;" != it
             }
             map["blockWhenAsync"]?.let {
                 info.blockWhenAsync = it as Boolean
@@ -162,9 +161,23 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
             val list = targetInfoList.filter { it.process == process }
             sort.sort(processName, list)
         }
-        context.logger.i("startup dispatch order below:" + "\n\n" + sort.generateOrder())
-        context.logger.i("startup relationship below:" + "\n\n" + sort.generateRelationship())
-        context.logger.i("graphviz dot code below:" + "\n\n" + sort.generateGraphviz() + "\n" + "parse dot code in http://magjac.com/graphviz-visual-editor/")
+        context.logger.i(buildString {
+            append("startup dispatch order below:")
+            appendLine().appendLine()
+            append(sort.generateOrder())
+        })
+        context.logger.i(buildString {
+            append("startup relationship below:")
+            appendLine().appendLine()
+            append(sort.generateRelationship())
+        })
+        context.logger.i(buildString {
+            append("graphviz dot code below:")
+            appendLine().appendLine()
+            append(sort.generateGraphviz())
+            appendLine()
+            append("parse dot code in http://magjac.com/graphviz-visual-editor/")
+        })
 
         // generate loader class
         val targetClasses = targetInfoList.map { it.nodeName }
@@ -187,7 +200,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
             val mv = cv.visitMethod(
                 Opcodes.ACC_PUBLIC or Opcodes.ACC_STATIC,
                 METHOD_INIT,
-                "(L${CLASS_STARTUP_CORE};)V",
+                "(L$CLASS_STARTUP_CORE;)V",
                 null,
                 null
             )
@@ -207,7 +220,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
                     Opcodes.INVOKEVIRTUAL,
                     CLASS_STARTUP_CORE,
                     METHOD_REGISTER,
-                    "(L${CLASS_STARTUP_TASK};)V",
+                    "(L$CLASS_STARTUP_TASK;)V",
                     false
                 )
             }
@@ -215,7 +228,7 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
             mv.visitLabel(labelEnd)
             mv.visitLocalVariable(
                 "var0",
-                "L${CLASS_STARTUP_CORE};",
+                "L$CLASS_STARTUP_CORE;",
                 null,
                 labelStart,
                 labelEnd,
@@ -234,10 +247,11 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
                     ImmutableSet.of(QualifiedContent.Scope.PROJECT),
                     Format.DIRECTORY
                 ).absolutePath
-            val dest = File(outputDirPath, CLASS_STARTUP_LOADER_INIT + SdkConstants.DOT_CLASS)
+            val dest = File(outputDirPath, "$CLASS_STARTUP_LOADER_INIT.class")
             dest.touch()
             writer.toByteArray().redirect(dest)
-            context.logger.i("generated $CLASS_STARTUP_LOADER_INIT(${dest.length()}) success[File]:${dest.absolutePath}".also {
+            context.logger.i(("generated $CLASS_STARTUP_LOADER_INIT(${dest.length()})" +
+                    " success[File]:${dest.absolutePath}").also {
                 println(it)
             })
         }.run {
@@ -254,7 +268,8 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
             print(gson.toJson(targetInfoMap))
             flush()
             close()
-            context.logger.i("save info map cache(${cacheInfoMapFile.length()}) success[File]:${cacheInfoMapFile.absolutePath}".also {
+            context.logger.i(("save info map cache(${cacheInfoMapFile.length()})" +
+                    " success[File]:${cacheInfoMapFile.absolutePath}").also {
                 kotlin.io.println(it)
             })
         }

@@ -4,6 +4,14 @@
     <bytecodeTargetLevel target="1.8">
       <module name="core-compiler" target="1.7" />
       <module name="core-interfaces" target="1.7" />
+      <module name="Startup.a" target="11" />
+      <module name="Startup.app" target="11" />
+      <module name="Startup.b" target="11" />
+      <module name="Startup.c" target="11" />
+      <module name="Startup.core" target="11" />
+      <module name="Startup.d" target="11" />
+      <module name="Startup.e" target="11" />
+      <module name="Startup.f" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

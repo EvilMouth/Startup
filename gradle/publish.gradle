@@ -38,5 +38,10 @@ afterEvaluate {
                 }
             }
         }
+        repositories {
+            maven {
+                url "$rootDir/repo/"
+            }
+        }
     }
 }

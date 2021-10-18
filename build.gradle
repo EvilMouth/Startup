@@ -2,6 +2,7 @@
 buildscript {
     apply from: "$rootDir/gradle/implementation.gradle"
     println "is use remote maven: $useMaven"
+    println "is use local maven: $useLocalMaven"
     ext {
         gradle_version = '7.0.3'
         kotlin_version = "1.5.31"
@@ -13,10 +14,12 @@ buildscript {
         maven {
             url "https://artifact.bytedance.com/repository/byteX/"
         }
-        mavenLocal()
+        maven {
+            url "$rootDir/repo/"
+        }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:${gradle_version}"
+        classpath "com.android.tools.build:gradle:$gradle_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -36,7 +39,9 @@ allprojects {
         maven {
             url "https://artifact.bytedance.com/repository/byteX/"
         }
-        mavenLocal()
+        maven {
+            url "$rootDir/repo/"
+        }
     }
 }
 
