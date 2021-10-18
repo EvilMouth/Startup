@@ -8,11 +8,13 @@ ext {
     startupCore = this.&startupCore
     startupCorePlugin = this.&startupCorePlugin
 
-    isJitpack = this.&isJitpack
+    isJitpack = this.&isJitpack()
 }
 
 def startupCore() {
-    if (useLocalMaven) {
+    if (isJitpack) {
+        return project(':core')
+    } else if (useLocalMaven) {
         return 'net.evilmouth:core:1.0.0-SNAPSHOT'
     } else if (useMaven) {
         return "$startup_group:core:$startup_version"
@@ -22,7 +24,9 @@ def startupCore() {
 }
 
 def startupCorePlugin() {
-    if (useLocalMaven) {
+    if (isJitpack) {
+        throw IllegalAccessException()
+    } else if (useLocalMaven) {
         return 'net.evilmouth:core-plugin:1.0.0-SNAPSHOT'
     } else if (useMaven) {
         return "$startup_group:core-plugin:$startup_version"

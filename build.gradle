@@ -30,7 +30,7 @@ buildscript {
         classpath "com.bytedance.android.byteX:base-plugin:$bytex_version"
         classpath "com.bytedance.android.byteX:access-inline-plugin:${bytex_version}"
 
-        if (!isJitpack()) {
+        if (!isJitpack) {
             classpath startupCorePlugin()
         }
     }
