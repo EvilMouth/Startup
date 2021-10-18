@@ -1,5 +1,4 @@
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
 
 def isAndroid = project.getPlugins().hasPlugin('com.android.application') || project.getPlugins().hasPlugin('com.android.library')
 if (isAndroid) {
@@ -21,9 +20,9 @@ afterEvaluate {
                 releaseAndroid(MavenPublication) {
                     from components.release
 
-                    groupId = POM_GROUP_ID
-                    artifactId = POM_ARTIFACT_ID
-                    version = POM_PUBLISH_VERSION
+                    groupId = 'net.evilmouth'
+                    artifactId = project.name
+                    version = '1.0.0-SNAPSHOT'
 
                     artifact generateAndroidSourcesJar
                 }
@@ -31,41 +30,13 @@ afterEvaluate {
                 releaseJava(MavenPublication) {
                     from components.java
 
-                    groupId = POM_GROUP_ID
-                    artifactId = POM_ARTIFACT_ID
-                    version = POM_PUBLISH_VERSION
+                    groupId = 'net.evilmouth'
+                    artifactId = project.name
+                    version = '1.0.0-SNAPSHOT'
 
                     artifact generateSourcesJar
                 }
             }
-        }
-    }
-}
-
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def bintray_user = properties.getProperty("bintray.user")
-def bintray_key = properties.getProperty("bintray.apikey")
-bintray {
-    user = bintray_user
-    key = bintray_key
-    publications = isAndroid ? ['releaseAndroid'] : ['releaseJava']
-    publish = true
-    override = true
-    pkg {
-        repo = POM_REPO_NAME
-        name = POM_UPLOAD_NAME
-        desc = POM_DESC
-        licenses = [POM_LICENCES]
-        websiteUrl = POM_WEBSITE
-        vcsUrl = POM_REPOSITORY
-        issueTrackerUrl = POM_ISSUE_TRACKER
-        publicDownloadNumbers = true
-        githubRepo = POM_GITHUB_REPO
-        version {
-            name = POM_PUBLISH_VERSION
-            released = new Date()
-            vcsTag = POM_PUBLISH_VERSION
         }
     }
 }

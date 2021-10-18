@@ -1,6 +1,3 @@
-if (Boolean.parseBoolean(BUILD_WITH_INTELLIJ_PLUGIN)) {
-    include ':core-intellij-plugin'
-}
 include ':core-plugin'
 include ':core'
 include ':core-base'

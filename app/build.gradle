@@ -65,4 +65,4 @@ dependencies {
 }
 
 apply plugin: 'bytex'
-//apply plugin: 'com.zyhang.startup'
+apply plugin: 'com.zyhang.startup'

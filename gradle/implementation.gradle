@@ -1,5 +1,5 @@
 ext {
-    startup_group = 'maven.evilmouth.startup'
+    startup_group = 'com.github.evilmouth.startup'
     startup_version = '1.0.1-beta02'
     useMaven = Boolean.parseBoolean(BUILD_WITH_MAVEN)
 
@@ -19,6 +19,6 @@ def startupCorePlugin() {
     if (useMaven) {
         return "$startup_group:core-plugin:$startup_version"
     } else {
-        return 'local.maven.evilmouth:core-plugin:1.0.0-local'
+        return 'net.evilmouth:core-plugin:1.0.0-SNAPSHOT'
     }
 }

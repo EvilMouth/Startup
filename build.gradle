@@ -4,21 +4,16 @@ buildscript {
     println "is use remote maven: $useMaven"
     ext {
         gradle_version = '4.1.1'
-        kotlin_version = "1.4.21"
-        bytex_version = "0.2.3"
-        jfrog_version = '1.8.4'
+        kotlin_version = "1.5.31"
+        bytex_version = "0.3.0"
     }
     repositories {
         google()
-        jcenter()
-        if (!useMaven) {
-            maven {
-                url "$rootDir/gradle_plugins"
-            }
-        }
+        mavenCentral()
         maven {
-            url "https://dl.bintray.com/zyhang/maven"
+            url "https://artifact.bytedance.com/repository/byteX/"
         }
+        mavenLocal()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${gradle_version}"
@@ -30,19 +25,18 @@ buildscript {
         classpath "com.bytedance.android.byteX:base-plugin:$bytex_version"
         classpath "com.bytedance.android.byteX:access-inline-plugin:${bytex_version}"
 
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$jfrog_version"
-
-//        classpath startupCorePlugin()
+        classpath startupCorePlugin()
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven {
-            url "https://dl.bintray.com/zyhang/maven"
+            url "https://artifact.bytedance.com/repository/byteX/"
         }
+        mavenLocal()
     }
 }
 
