@@ -7,6 +7,8 @@ ext {
 
     startupCore = this.&startupCore
     startupCorePlugin = this.&startupCorePlugin
+
+    isJitpack = this.&isJitpack
 }
 
 def startupCore() {
@@ -27,4 +29,13 @@ def startupCorePlugin() {
     } else {
         return 'net.evilmouth:core-plugin:1.0.0-SNAPSHOT'
     }
+}
+
+static boolean isJitpack() {
+    def map = System.getenv()
+    if (map == null) {
+        return false
+    }
+    def key = "JITPACK"
+    return map.containsKey(key) && map.get(key) == "true"
 }

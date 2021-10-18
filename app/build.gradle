@@ -63,4 +63,7 @@ dependencies {
 }
 
 apply plugin: 'bytex'
-apply plugin: 'com.zyhang.startup'
+if (!isJitpack()) {
+    println 'apply startup plugin'
+    apply plugin: 'com.zyhang.startup'
+}

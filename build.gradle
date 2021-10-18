@@ -3,6 +3,7 @@ buildscript {
     apply from: "$rootDir/gradle/implementation.gradle"
     println "is use remote maven: $useMaven"
     println "is use local maven: $useLocalMaven"
+    println "is jitpack build: $isJitpack"
     ext {
         gradle_version = '7.0.3'
         kotlin_version = "1.5.31"
@@ -29,7 +30,9 @@ buildscript {
         classpath "com.bytedance.android.byteX:base-plugin:$bytex_version"
         classpath "com.bytedance.android.byteX:access-inline-plugin:${bytex_version}"
 
-        classpath startupCorePlugin()
+        if (!isJitpack()) {
+            classpath startupCorePlugin()
+        }
     }
 }
 
