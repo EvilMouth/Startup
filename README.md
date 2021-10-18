@@ -1,4 +1,8 @@
 # Startup
+[![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://developer.android.com/about/versions/android-5.0)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/evilmouth/startup)](https://github.com/EvilMouth/Startup/releases/)
+[![Author](https://img.shields.io/badge/Author-EvilMouth-red.svg?style=flat)](https://www.evilmouth.net/)
 
 Android多模块任务启动方案
 
@@ -24,22 +28,22 @@ buildscript {
         startup_version = latest_version
     }
     repositories {
-        jcenter()
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath "maven.evilmouth.startup:core-plugin:$startup_version"
+        classpath "com.github.evilmouth.startup:core-plugin:$startup_version"
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
+        maven { url 'https://jitpack.io' }
     }
 }
 
 // in each module/build.gradle
 dependencies {
-    implementation "maven.evilmouth.startup:core:$startup_version"
+    implementation "com.github.evilmouth.startup:core:$startup_version"
 }
 
 // in app/build.gradle
