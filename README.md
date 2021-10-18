@@ -1,7 +1,5 @@
 # Startup
 
-[ ![Download](https://api.bintray.com/packages/zyhang/maven/Startup-Core/images/download.svg) ](https://bintray.com/zyhang/maven/Startup-Core/_latestVersion)
-
 Android多模块任务启动方案
 
 本方案旨在解决 **Android模块化** 之后模块之间启动依赖关系，并优化 App 启动速度
@@ -15,7 +13,6 @@ Android多模块任务启动方案
 - 编译期校验任务依赖合法性（即时纠错）
 - 编译期生成启动任务执行顺序以及依赖关系
 - 已配置混淆
-- 导航插件帮助在**StartupTask**之间快速跳转
 - 同度任务支持优先级配置（1.0.0-beta05+）
 
 ## 使用
@@ -77,14 +74,6 @@ class B : AndroidStartupTask() {
 更多使用详情见 module app
 
 ## 说明
-
-### Startup Navigator 导航
-
-插件已发布，可直接在 [Marketplace](https://plugins.jetbrains.com/plugin/15338-startup-navigator?preview=true) 搜索下载
-
-<img src="./img/WX20201106-124004@2x.png"></img>
-
-> 导航插件需要 Android Studio 版本在 201.6668.121 以上
 
 ### StartupTaskRegister 属性
 

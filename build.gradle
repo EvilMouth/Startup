@@ -3,7 +3,7 @@ buildscript {
     apply from: "$rootDir/gradle/implementation.gradle"
     println "is use remote maven: $useMaven"
     ext {
-        gradle_version = '4.1.1'
+        gradle_version = '7.0.3'
         kotlin_version = "1.5.31"
         bytex_version = "0.3.0"
     }
