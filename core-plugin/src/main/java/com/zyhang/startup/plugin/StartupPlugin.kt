@@ -144,14 +144,20 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
     override fun afterTransform(engine: TransformEngine) {
         super.afterTransform(engine)
 
-        // check target class if is a StartupTask
         val targetInfoList = targetInfoMap.values.filter {
+            // check target class if is a StartupTask
             context.classGraph.instanceofClass(it.nodeName, CLASS_STARTUP_TASK)
+        }.filter {
+            val exclude = extension.getExcludeTaskList().contains(it.nodeName)
+            if (exclude) {
+                context.logger.i("exclude node ${it.nodeName}")
+            }
+            exclude.not()
         }
         if (targetInfoList.isEmpty()) {
             return
         }
-        context.logger.i("found target info -> \n${gson.toJson(targetInfoList)}")
+        context.logger.i("found target info list -> \n${gson.toJson(targetInfoList)}")
 
         // sort and check
         val sort = StartupSort()
@@ -162,21 +168,21 @@ class StartupPlugin : CommonPlugin<StartupExtension, StartupContext>() {
             sort.sort(processName, list)
         }
         context.logger.i(buildString {
-            append("startup dispatch order below:")
+            append("startup dispatch order info at below:")
             appendLine().appendLine()
             append(sort.generateOrder())
         })
         context.logger.i(buildString {
-            append("startup relationship below:")
+            append("startup relationship info at below:")
             appendLine().appendLine()
             append(sort.generateRelationship())
         })
         context.logger.i(buildString {
-            append("graphviz dot code below:")
+            append("graphviz dot code at below:")
             appendLine().appendLine()
             append(sort.generateGraphviz())
             appendLine()
-            append("parse dot code in http://magjac.com/graphviz-visual-editor/")
+            append("copy dot code and paste in http://magjac.com/graphviz-visual-editor/")
         })
 
         // generate loader class

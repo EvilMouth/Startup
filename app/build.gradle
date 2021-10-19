@@ -66,4 +66,9 @@ apply plugin: 'bytex'
 if (!isJitpack) {
     println 'apply startup plugin'
     apply plugin: 'com.zyhang.startup'
+    StartupExtension {
+        excludeTaskList = [
+                'com/zyhang/startup/app/M'
+        ]
+    }
 }
