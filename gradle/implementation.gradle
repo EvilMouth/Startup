@@ -1,9 +1,9 @@
 ext {
     startup_group = 'com.github.evilmouth.startup'
-    startup_version = '1.1.0'
-    useMaven = Boolean.parseBoolean(BUILD_WITH_MAVEN)
+    startup_version = '1.1.1'
+    useMaven = true
 
-    useLocalMaven = Boolean.parseBoolean(BUILD_WITH_LOCAL_MAVEN)
+    useLocalMaven = false
 
     startupCore = this.&startupCore
     startupCorePlugin = this.&startupCorePlugin
