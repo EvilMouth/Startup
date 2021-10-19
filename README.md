@@ -18,105 +18,13 @@ Android多模块任务启动方案
 - 编译期生成启动任务执行顺序以及依赖关系
 - 已配置混淆
 - 同度任务支持优先级配置（1.0.0-beta05+）
+- 支持配置excludeTaskList排除启动任务
 
-## 使用
+## 使用以及说明
 
-```groovy
-// in root/build.gradle
-buildscript {
-    ext {
-        startup_version = latest_version
-    }
-    repositories {
-        maven { url 'https://jitpack.io' }
-    }
-    dependencies {
-        classpath "com.github.evilmouth.startup:core-plugin:$startup_version"
-    }
-}
+见[Wiki](https://github.com/EvilMouth/Startup/wiki)
 
-allprojects {
-    repositories {
-        maven { url 'https://jitpack.io' }
-    }
-}
-
-// in each module/build.gradle
-dependencies {
-    implementation "com.github.evilmouth.startup:core:$startup_version"
-}
-
-// in app/build.gradle
-apply plugin: 'bytex'
-apply plugin: 'com.zyhang.startup'
-```
-
-- 实现一个 StartupTask
-- 使用 StartupTaskRegister 注解声明属性
-
-```kotlin
-@StartupTaskRegister(id = "a.A")
-class A : AndroidStartupTask() {
-    override fun startup(context: Context) {
-        Log.i("Core", "A startup")
-    }
-}
-
-@StartupTaskRegister(
-    id = "b.B",
-    idDependencies = ["a.A"],
-    executorFactory = IOExecutor.Factory::class
-)
-class B : AndroidStartupTask() {
-    override fun startup(context: Context) {
-        Thread.sleep(3000)
-        Log.d("Core", "B startup")
-    }
-}
-```
-
-更多使用详情见 module app
-
-## 说明
-
-### StartupTaskRegister 属性
-
-```kotlin
-annotation class StartupTaskRegister(
-    /**
-     * 任务id，唯一标识
-     */
-    val id: String,
-    /**
-     * 该任务所依赖的任务id集合，一个模块可能需要依赖多个模块
-     */
-    val idDependencies: Array<String> = [],
-    /**
-     * 任务执行器，默认为BlockExecutor，即直接在当前线程（App启动线程）执行
-     * @see BlockExecutor 同步 串行
-     * @see IOExecutor 异步 并行
-     * @see CPUExecutor 异步 并行
-     */
-    val executorFactory: KClass<out ExecutorFactory> = BlockExecutor.Factory::class,
-    /**
-     * 当 executor 不是 BlockExecutor（理解为异步）时，是否需要阻塞当前线程（App启动线程）
-     * 当然如果使用 BlockExecutor，该属性不管 true/false 作用都一样
-     */
-    val blockWhenAsync: Boolean = false,
-    /**
-     * 进程名，默认空表示在主进程
-     * 不允许两个不同进程的任务之间有依赖关系的
-     */
-    val process: String = "",
-    /**
-     * 优先级越大，任务越快分发
-     * 如果两个同度任务优先级一致，该框架不能保证分发顺序
-     */
-    val priority: Int = 0,
-)
-```
-
-### 生成的启动任务执行顺序和依赖关系
+## 辅助生成的启动任务执行顺序和依赖关系
 
 > 本插件在 Bytex 基础上开发，生成的日志都在 Bytex 的标准日志输出位置
 
