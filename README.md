@@ -3,6 +3,7 @@
 [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://developer.android.com/about/versions/android-5.0)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/evilmouth/startup)](https://github.com/EvilMouth/Startup/releases/)
 [![Author](https://img.shields.io/badge/Author-EvilMouth-red.svg?style=flat)](https://www.evilmouth.net/)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/evilmouth/startup/Android%20CI?logo=github)
 
 Android多模块任务启动方案
 
