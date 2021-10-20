@@ -3,7 +3,7 @@ buildscript {
     apply from: "$rootDir/gradle/implementation.gradle"
     println "is use remote maven: $useMaven"
     println "is use local maven: $useLocalMaven"
-    println "is jitpack build: $isJitpack"
+    println "is ci build: $isCI"
     ext {
         gradle_version = '7.0.3'
         kotlin_version = "1.5.31"
@@ -30,13 +30,14 @@ buildscript {
         classpath "com.bytedance.android.byteX:base-plugin:$bytex_version"
         classpath "com.bytedance.android.byteX:access-inline-plugin:${bytex_version}"
 
-        if (!isJitpack) {
+        if (!isCI) {
             classpath startupCorePlugin()
         }
     }
 }
 
 allprojects {
+    apply from: "$rootDir/gradle/implementation.gradle"
     repositories {
         google()
         mavenCentral()
@@ -47,6 +48,11 @@ allprojects {
             url "$rootDir/repo/"
         }
         maven { url 'https://jitpack.io' }
+    }
+    if (useMaven && !isCI) {
+        configurations.all {
+            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        }
     }
 }
 

@@ -1,18 +1,18 @@
 ext {
     startup_group = 'com.github.evilmouth.startup'
-    startup_version = '1.1.1'
-    useMaven = true
+    startup_version = 'main-SNAPSHOT'
 
+    useMaven = true
     useLocalMaven = false
 
     startupCore = this.&startupCore
     startupCorePlugin = this.&startupCorePlugin
 
-    isJitpack = this.&isJitpack()
+    isCI = this.&isCI()
 }
 
 def startupCore() {
-    if (isJitpack) {
+    if (isCI) {
         return project(':core')
     } else if (useLocalMaven) {
         return 'net.evilmouth:core:1.0.0-SNAPSHOT'
@@ -24,7 +24,7 @@ def startupCore() {
 }
 
 def startupCorePlugin() {
-    if (isJitpack) {
+    if (isCI) {
         throw IllegalAccessException()
     } else if (useLocalMaven) {
         return 'net.evilmouth:core-plugin:1.0.0-SNAPSHOT'
@@ -35,11 +35,12 @@ def startupCorePlugin() {
     }
 }
 
-static boolean isJitpack() {
+static boolean isCI() {
     def map = System.getenv()
     if (map == null) {
         return false
     }
-    def key = "JITPACK"
-    return map.containsKey(key) && map.get(key) == "true"
+    def isGithubCI = map.containsKey("CI") && map.get("CI") == "true"
+    def isJitpackCI = map.containsKey("JITPACK") && map.get("JITPACK") == "true"
+    return isGithubCI || isJitpackCI
 }
