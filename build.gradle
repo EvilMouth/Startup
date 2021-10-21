@@ -43,9 +43,9 @@ plugins {
 }
 ext {
     PUBLISH_GROUP_ID = 'net.evilmouth'
-    PUBLISH_VERSION = '1.0.0-SNAPSHOT'
+    PUBLISH_VERSION = '1.1.1'
 }
-apply from: 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/1.2.0/scripts/publish-root.gradle'
+apply from: 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/1.3.1/scripts/publish-root.gradle'
 
 allprojects {
     repositories {

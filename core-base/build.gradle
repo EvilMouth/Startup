@@ -12,4 +12,4 @@ targetCompatibility = "1.8"
 ext {
     PUBLISH_ARTIFACT_ID = 'startup-core-base'
 }
-apply from: 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/1.2.0/scripts/publish-module.gradle'
+apply from: 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/1.3.1/scripts/publish-module.gradle'

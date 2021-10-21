@@ -1,10 +1,8 @@
-name: Publish
+name: Publish Snapshot
 
 on:
   workflow_dispatch:
-  release:
-    # We'll run this workflow when a new GitHub release is created
-    types: [released]
+  push:
 
 jobs:
   publish:
@@ -18,18 +16,15 @@ jobs:
         with:
           distribution: adopt
           java-version: 11
+          cache: gradle
 
         # Builds the release artifacts of the library
       - name: Release build
         run: ./gradlew assembleRelease
 
-        # Generates other artifacts (javadocJar is optional)
-      - name: Source jar and dokka
-        run: ./gradlew androidSourcesJar javadocJar
-
         # Runs upload, and then closes & releases the repository
       - name: Publish to MavenCentral
-        run: ./gradlew publishReleasePublicationToSonatypeRepository --max-workers 1 closeAndReleaseSonatypeStagingRepository
+        run: ./gradlew publishReleasePublicationToSonatypeRepository
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
@@ -37,3 +32,4 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+          SNAPSHOT: true
