@@ -7,16 +7,14 @@ ext {
 
     startupCore = this.&startupCore
     startupCorePlugin = this.&startupCorePlugin
-
-    isCI = this.&isCI()
 }
 
 def startupCore() {
     if (isCI) {
         return project(':core')
     } else if (useLocalMaven) {
-        return 'net.evilmouth:core:1.0.0-SNAPSHOT'
-    } else if (useMaven) {
+        return 'net.evilmouth:startup-core:1.0.0-SNAPSHOT'
+    } else if (useRemoteMaven) {
         return "$startup_group:core:$startup_version"
     } else {
         return project(':core')
@@ -27,20 +25,10 @@ def startupCorePlugin() {
     if (isCI) {
         throw IllegalAccessException()
     } else if (useLocalMaven) {
-        return 'net.evilmouth:core-plugin:1.0.0-SNAPSHOT'
-    } else if (useMaven) {
+        return 'net.evilmouth:startup-core-plugin:1.0.0-SNAPSHOT'
+    } else if (useRemoteMaven) {
         return "$startup_group:core-plugin:$startup_version"
     } else {
-        return 'net.evilmouth:core-plugin:1.0.0-SNAPSHOT'
+        return 'net.evilmouth:startup-core-plugin:1.0.0-SNAPSHOT'
     }
-}
-
-static boolean isCI() {
-    def map = System.getenv()
-    if (map == null) {
-        return false
-    }
-    def isGithubCI = map.containsKey("CI") && map.get("CI") == "true"
-    def isJitpackCI = map.containsKey("JITPACK") && map.get("JITPACK") == "true"
-    return isGithubCI || isJitpackCI
 }

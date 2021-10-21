@@ -35,4 +35,7 @@ dependencies {
     api project(':core-base')
 }
 
-apply from: "$rootDir/gradle/publish.gradle"
+ext {
+    PUBLISH_ARTIFACT_ID = 'startup-core'
+}
+apply from: 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/1.2.0/scripts/publish-module.gradle'
