@@ -10,6 +10,8 @@ jobs:
   publish:
     name: Release build and publish
     runs-on: ubuntu-latest
+    env:
+      RELEASE: true
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -37,4 +39,3 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
-          RELEASE: true
