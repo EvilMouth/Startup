@@ -5,7 +5,7 @@ buildscript {
         kotlin_version = "1.5.31"
         bytex_version = "0.3.0"
 
-        scriptsPath = 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/1.4.0/scripts'
+        scriptsPath = 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/2.0.0/scripts'
         BUILD_WITH_REMOTE_MAVEN = true
         BUILD_WITH_LOCAL_MAVEN = false
     }
