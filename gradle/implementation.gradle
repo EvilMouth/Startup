@@ -1,9 +1,6 @@
 ext {
-    startup_group = 'com.github.evilmouth.startup'
-    startup_version = 'main-SNAPSHOT'
-
-    useMaven = true
-    useLocalMaven = false
+    startup_group = 'net.evilmouth'
+    startup_version = '1.1.1-SNAPSHOT'
 
     startupCore = this.&startupCore
     startupCorePlugin = this.&startupCorePlugin
@@ -12,10 +9,8 @@ ext {
 def startupCore() {
     if (isCI) {
         return project(':core')
-    } else if (useLocalMaven) {
-        return 'net.evilmouth:startup-core:1.0.0-SNAPSHOT'
-    } else if (useRemoteMaven) {
-        return "$startup_group:core:$startup_version"
+    } else if (useLocalMaven || useRemoteMaven) {
+        return "$startup_group:startup-core:$startup_version"
     } else {
         return project(':core')
     }
@@ -24,11 +19,7 @@ def startupCore() {
 def startupCorePlugin() {
     if (isCI) {
         throw IllegalAccessException()
-    } else if (useLocalMaven) {
-        return 'net.evilmouth:startup-core-plugin:1.0.0-SNAPSHOT'
-    } else if (useRemoteMaven) {
-        return "$startup_group:core-plugin:$startup_version"
     } else {
-        return 'net.evilmouth:startup-core-plugin:1.0.0-SNAPSHOT'
+        return "$startup_group:startup-core-plugin:$startup_version"
     }
 }

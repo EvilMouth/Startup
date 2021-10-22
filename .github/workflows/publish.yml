@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   release:
     # We'll run this workflow when a new GitHub release is created
-    types: [released]
+    types: [ released ]
 
 jobs:
   publish:
@@ -25,7 +25,7 @@ jobs:
 
         # Generates other artifacts (javadocJar is optional)
       - name: Source jar and dokka
-        run: ./gradlew androidSourcesJar javadocJar
+        run: ./gradlew sourcesJar javadocJar
 
         # Runs upload, and then closes & releases the repository
       - name: Publish to MavenCentral
@@ -37,3 +37,4 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+          RELEASE: true

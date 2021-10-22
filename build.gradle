@@ -5,10 +5,11 @@ buildscript {
         kotlin_version = "1.5.31"
         bytex_version = "0.3.0"
 
-        BUILD_WITH_REMOTE_MAVEN = false
+        scriptsPath = 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/1.4.0/scripts'
+        BUILD_WITH_REMOTE_MAVEN = true
         BUILD_WITH_LOCAL_MAVEN = false
     }
-    apply from: 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/main/scripts/helper.gradle'
+    apply from: "$scriptsPath/helper.gradle"
     apply from: "$rootDir/gradle/implementation.gradle"
 
     repositories {
@@ -17,8 +18,8 @@ buildscript {
         maven {
             url "https://artifact.bytedance.com/repository/byteX/"
         }
-        mavenLocal()
         maven { url 'https://jitpack.io' }
+        mavenLocal()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$gradle_version"
@@ -45,7 +46,7 @@ ext {
     PUBLISH_GROUP_ID = 'net.evilmouth'
     PUBLISH_VERSION = '1.1.1'
 }
-apply from: 'https://raw.githubusercontent.com/EvilMouth/MavenCentralInstruction/1.3.1/scripts/publish-root.gradle'
+apply from: "$scriptsPath/publish-root.gradle"
 
 allprojects {
     repositories {
@@ -54,8 +55,8 @@ allprojects {
         maven {
             url "https://artifact.bytedance.com/repository/byteX/"
         }
-        mavenLocal()
         maven { url 'https://jitpack.io' }
+        mavenLocal()
     }
     if (useRemoteMaven) {
         configurations.all {
